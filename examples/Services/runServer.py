@@ -6,9 +6,10 @@
 #  self.strategies：启动的策略实例，须在catStrategy/CtaSetting.json 里面定义  [u'S28_RB1001', u'S28_TFT', u'S28_HCRB',u'atr_rsi']
 #  vtServer的ZMQ端口： 从VT_Setting.json中配置，根据AUTO_CONNCET_GW找到对应得端口配置
 
-import os
-import sys
-
+import sys,os
+curPath = os.path.abspath(os.path.dirname(__file__))
+rootPath = os.path.split(curPath)[0]
+sys.path.append(rootPath)
 import ctypes
 from datetime import datetime, timedelta, date
 from time import sleep
