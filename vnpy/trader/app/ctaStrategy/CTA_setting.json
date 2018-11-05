@@ -1,8 +1,8 @@
 [
 
 {
-          "name": "S30_RB1001",
-          "className": "Strategy30",
+          "name": "S30_AtrRsiStrategy",
+          "className": "AtrRsiStrategy",
           "vtSymbol": "rb1710;rb1801",
           "symbol": "rb1710;rb1801",
           "shortSymbol":"RB",

@@ -121,6 +121,9 @@ class AtrRsiStrategy(CtaTemplate):
     def onTick(self, tick):
         """收到行情TICK推送（必须由用户继承实现）"""
         # 计算K线
+        print('*' * 20 + 'onTick start' + '*' * 20)
+        print(tick)
+        print('*' * 20 + 'onTick end' + '*' * 20)
         tickMinute = tick.datetime.minute
 
         if tickMinute != self.barMinute:    
@@ -152,6 +155,9 @@ class AtrRsiStrategy(CtaTemplate):
 
     #----------------------------------------------------------------------
     def onBar(self, bar):
+        print('-' * 20 + 'onBar start' + '-' * 20)
+        print(bar)
+        print('-' * 20 + 'onBar end' + '-' * 20)
         """收到Bar推送（必须由用户继承实现）"""
         # 撤销之前发出的尚未成交的委托（包括限价单和停止单）
         for orderID in self.orderList:
