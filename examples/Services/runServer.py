@@ -18,7 +18,7 @@ from threading import Thread
 ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.append(ROOT_PATH)
 
-from vnpy.trader.vtEvent import *
+# from vnpy.trader.vtEvent import *
 from vnpy.rpc import RpcServer
 from vnpy.trader.vtEngine import MainEngine
 from vnpy.trader.gateway import ctpGateway
