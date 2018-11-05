@@ -3,11 +3,11 @@
 {
           "name": "S30_AtrRsiStrategy",
           "className": "AtrRsiStrategy",
-          "vtSymbol": "rb1710;rb1801",
-          "symbol": "rb1710;rb1801",
+          "vtSymbol": "rb1810;rb1901",
+          "symbol": "rb1810;rb1901",
           "shortSymbol":"RB",
-          "Leg1Symbol":"rb1710",
-          "Leg2Symbol":"rb1801",
+          "Leg1Symbol":"rb1810",
+          "Leg2Symbol":"rb1901",
           "baseUpLine":300,
           "baseMidLine":0,
           "baseDnLine":-300,
@@ -39,5 +39,24 @@
           "maxLots":15,
           "mode":"tick"
       }
+//  {
+//          "name": "S30_AtrRsiStrategy",
+//          "className": "AtrRsiStrategy",
+//          "vtSymbol": "rb1901; ru1901; m1901; i1901; cu1901; ni1901; hc1901; y1901; jm1901; cf1901; zn1901; sr1901",
+//          "symbol": "rb1901; ru1901; m1901; i1901; cu1901; ni1901; hc1901; y1901; jm1901; cf1901; zn1901; sr1901",
+//          "shortSymbol":"RB",
+//          "Leg1Symbol":"rb1710",
+//          "Leg2Symbol":"rb1801",
+//          "baseUpLine":300,
+//          "baseMidLine":0,
+//          "baseDnLine":-300,
+//          "minDiff":1,
+//          "inputSS":2,
+//          "height":3,
+//          "win":5,
+//          "maxPos":36,
+//          "maxLots":15,
+//          "mode":"tick"
+//      }
 
 ]
