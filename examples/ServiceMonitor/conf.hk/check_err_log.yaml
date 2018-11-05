@@ -1,0 +1,46 @@
+## 华富策略监控代理配置文件
+working_time_only: false
+# inputs定义监控时间触发器
+inputs:
+  - name: "cta_log_file_new_error"
+    handler: "log_file"
+    tags_out:
+      - "err_log"
+    options:
+      path: "/home/trade/vnpy/examples/bitcoin/logs/service-error.log"  # 路径支持通配符，所有文件都会逐一扫描
+      multiline: true
+
+  - name: "cma_log_file_new_error"
+    handler: "log_file"
+    tags_out:
+      - "err_log"
+    options:
+      path: "/home/trade/vnpy/examples/btc_cma/logs/service-error.log"  # 路径支持通配符，所有文件都会逐一扫描
+      multiline: true
+
+# filters定义过滤器
+filters: 
+  - name: "strategy_name"
+    tags_in:
+      - "err_log"
+    tags_out:
+      - "warning"
+    handler: "regex_parser"
+    options:
+      key: "file"
+      pattern: "//(?P<strategy_name>.+)/logs"
+
+# outputs定义输出
+outputs: 
+  - name: "screen"
+    tags_in: 
+      - "warning"
+    handler: "stdout"
+  - name: "telegram"
+    handler: "telegram"
+    tags_in:
+      - "warning"
+    options:examples
+      source: "HK_01"
+      format: "{strategy_name}出现新的错误信息：\n{raw_content}"
+

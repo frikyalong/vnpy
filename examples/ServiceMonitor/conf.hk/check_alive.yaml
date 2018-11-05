@@ -1,0 +1,56 @@
+## 华富策略监控代理配置文件
+working_time_only: false
+# inputs定义监控时间触发器
+inputs:
+  # Cta运行服务
+  - name: "cta_monitor"  # 当事件传递给过滤器时，会把name作为source传递给过滤器
+    handler: "pid_file"       # handler的名字和对应的类名相同
+    tags_out:
+      - "pid"
+    options:                   # options的内容作为类的初始化参数
+      path: "/home/trade/vnpy/examples/bitcoin/logs/gpid.txt"  # 路径支持通配符，所有文件都会逐一扫描
+  # cma运行服务
+  - name: "btc_cma_monitor"  # 当事件传递给过滤器时，会把name作为source传递给过滤器
+    handler: "pid_file"       # handler的名字和对应的类名相同
+    tags_out:
+      - "pid"
+    options:                   # options的内容作为类的初始化参数
+      path: "/home/trade/vnpy/examples/btc_cma/logs/gpid.txt"  # 路径支持通配符，所有文件都会逐一扫描
+
+# filters定义过滤器
+filters: 
+  - name: "check_dead_process"
+    tags_in:
+      - "pid"
+    tags_out:
+      - "dead_pid"
+    handler: "if_true"
+    options:
+      key: "process_not_exists"
+
+  - name: "pid_strategy_name"
+    tags_in:
+      - "dead_pid"
+    tags_out:
+      - "warning"
+    handler: "regex_parser"
+    options:
+      key: "file"
+      pattern: "/examples/(?P<strategy_name>.+)/logs"
+
+
+# outputs定义输出
+outputs: 
+  - name: "screen"
+    tags_in: 
+      - "warning"
+      - "debug"
+    handler: "stdout"
+  - name: "telegram"
+    handler: "telegram"
+    tags_in:
+      - "warning"
+    options:
+      source: "HK_01"
+      format: "{strategy_name}进程不存在！"
+ 

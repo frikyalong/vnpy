@@ -157,6 +157,12 @@ class CtpGateway(VtGateway):
         self.writeLog(u'连接行情服务器')
         self.mdApi.connect(userID, password, brokerID, mdAddress)
         self.writeLog(u'连接交易服务器')
+        self.writeLog(u'userID')
+        self.writeLog(userID)
+        self.writeLog(u'password')
+        self.writeLog(password)
+        self.writeLog(u'tdAddress')
+        self.writeLog(tdAddress)
         self.tdApi.connect(userID, password, brokerID, tdAddress, authCode, userProductInfo)
         self.setQryEnabled(True)
         # 初始化并启动查询
@@ -485,6 +491,7 @@ class CtpMdApi(MdApi):
     #----------------------------------------------------------------------
     def connect(self, userID, password, brokerID, address):
         """初始化连接"""
+        self.writeLog(u'md connect')
         self.userID = userID                # 账号
         self.password = password            # 密码
         self.brokerID = brokerID            # 经纪商代码
@@ -492,6 +499,7 @@ class CtpMdApi(MdApi):
         
         # 如果尚未建立服务器连接，则进行连接
         if not self.connectionStatus:
+            self.writeLog(u'not self.connectionStatus')
             # 创建C++环境中的API对象，这里传入的参数是需要用来保存.con文件的文件夹路径
             path = os.getcwd() + '/temp/' + str(self.gatewayName) + '/'
             if not os.path.exists(path):
@@ -506,6 +514,7 @@ class CtpMdApi(MdApi):
             
         # 若已经连接但尚未登录，则进行登录
         else:
+            self.writeLog(u'self.connectionStatus')
             if not self.loginStatus:
                 self.login()
         
@@ -534,6 +543,7 @@ class CtpMdApi(MdApi):
             req['Password'] = self.password
             req['BrokerID'] = self.brokerID
             self.reqID += 1
+            self.writeLog(u'reqUserLogin')
             self.reqUserLogin(req, self.reqID)    
     
     #----------------------------------------------------------------------
@@ -1462,6 +1472,7 @@ class CtpTdApi(TdApi):
     # ----------------------------------------------------------------------
     def connect(self, userID, password, brokerID, address, authCode, userProductInfo):
         """初始化连接"""
+        self.writeLog(u'td connect')
         self.userID = userID                # 账号
         self.password = password            # 密码
         self.brokerID = brokerID            # 经纪商代码
@@ -1471,6 +1482,7 @@ class CtpTdApi(TdApi):
 
         # 如果尚未建立服务器连接，则进行连接
         if not self.connectionStatus:
+            self.writeLog(u'not self.connectionStatus')
             # 创建C++环境中的API对象，这里传入的参数是需要用来保存.con文件的文件夹路径
             path = os.getcwd() + '/temp/' + str(self.gatewayName) + '/'
             if not os.path.exists(path):
@@ -1489,6 +1501,7 @@ class CtpTdApi(TdApi):
             
         # 若已经连接但尚未登录，则进行登录
         else:
+            self.writeLog(u'requireAuthentication')
             if self.requireAuthentication and not self.authStatus:
                 self.authenticate()
             elif not self.loginStatus:

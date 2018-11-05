@@ -1,0 +1,65 @@
+## 华富策略监控代理配置文件
+working_time_only: false
+# inputs定义监控时间触发器
+inputs:
+  - name: "cta_log_file_heartbeat"
+    handler: "log_file"
+    tags_out:
+      - "last_log"
+    options:
+      path: "/home/trade/vnpy/examples/bitcoin/logs/service.log"  # 路径支持通配符，所有文件都会逐一扫描
+      last_lines: 1
+
+  - name: "cma_log_file_heartbeat"
+    handler: "log_file"
+    tags_out:
+      - "last_log"
+    options:
+      path: "/home/trade/vnpy/examples/btc_cma/logs/service.log"  # 路径支持通配符，所有文件都会逐一扫描
+      last_lines: 1
+
+
+# filters定义过滤器
+filters: 
+  - name: "parse_timestamp"
+    tags_in:
+      - "last_log"
+    tags_out:
+      - "heartbeat"
+    handler: "regex_parser"
+    options:
+      key: "raw_content"
+      pattern: "\\[(?P<timestamp>[0-9\\-]+ [0-9\\:]+),.+\\]"
+  - name: "check_heartbeat_timeout"
+    tags_in:
+      - "heartbeat"
+    tags_out:
+      - "timeout"
+    handler: "timeout"
+    options:
+      timeout: 120
+  - name: "strategy_name"
+    tags_in:
+      - "timeout"
+    tags_out:
+      - "warning"
+    handler: "regex_parser"
+    options:
+      key: "file"
+      pattern: "//(?P<strategy_name>.+)/logs"
+
+# outputs定义输出
+outputs: 
+  - name: "screen"
+    tags_in: 
+      - "warning"
+      - "debug"
+    handler: "stdout"
+
+  - name: "telegram"
+    handler: "telegram"
+    tags_in:
+      - "warning"
+    options:examples
+      source: "HK_01"
+      format: "{strategy_name}没有心跳！\n最后日志时间:{last_timestamp}"

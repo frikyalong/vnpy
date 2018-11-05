@@ -1,0 +1,32 @@
+{
+	"fontFamily": "微软雅黑",
+	"fontSize": 11,
+
+	"mongoHost": "mongodb://127.0.0.1",
+	"mongoPort": 27017,
+	"mongoLogging": true,
+	"dataSource":"http://127.0.0.1:5000/api/v1/get_price",
+	"darkStyle": true,
+	"language": "chinese",
+	"strategy_group":"8888888",
+	"gateway_name":"CTP",
+	"ZMQ":
+	{
+		"CTP_001": {
+			"ReqAddress": "tcp://127.0.0.1:11001",
+			"PubAddress": "tcp://127.0.0.1:11002",
+			"SubscribeTopic":""}
+		,
+		"CTP_002": {
+			"ReqAddress": "tcp://127.0.0.1:12003",
+			"PubAddress": "tcp://127.0.0.1:12004",
+			"SubscribeTopic":""}
+		,
+		"CTP_003": {
+			"ReqAddress": "tcp://127.0.0.1:13003",
+			"PubAddress": "tcp://127.0.0.1:13004",
+			"SubscribeTopic":""}
+
+	}
+
+}
