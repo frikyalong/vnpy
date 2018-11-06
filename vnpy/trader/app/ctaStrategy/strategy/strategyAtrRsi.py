@@ -24,7 +24,7 @@ from vnpy.trader.app.ctaStrategy.ctaTemplate import CtaTemplate
 class AtrRsiStrategy(CtaTemplate):
     """结合ATR和RSI指标的一个分钟线交易策略"""
     className = 'AtrRsiStrategy'
-    author = u'用Python的交易员'
+    author = u'Gary'
 
     # 策略参数
     atrLength = 22          # 计算ATR指标的窗口数   
