@@ -1,6 +1,8 @@
 ﻿# C++源代码
 ipch/
 Release/
+logs/
+temp/
 
 *.sdf
 *.sln
