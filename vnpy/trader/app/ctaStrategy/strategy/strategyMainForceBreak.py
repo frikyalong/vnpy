@@ -99,11 +99,11 @@ class MainForceBreakStrategy(CtaTemplate):
         m5LineSetting['period'] = 'minute'
         m5LineSetting['barTimeInterval'] = 5
         m5LineSetting['mode'] = CtaLineBar.TICK_MODE
-        m5LineSetting['minDiff'] = self.minDiff
+        m5LineSetting['minDiff'] = 1
         # m5LineSetting['shortSymbol'] = 'aa[:-4].upper()' rb
         m5LineSetting['shortSymbol'] = 'RB'
         m5LineSetting['is_7x24'] = False
-        bar_class = getCtaBarClass(self.kline_period)
+        bar_class = getCtaBarClass('minute')
         self.lineM5 = bar_class(self, self.onBarM5, m5LineSetting)
 
         # 创建3minsK线
@@ -112,10 +112,10 @@ class MainForceBreakStrategy(CtaTemplate):
         m3LineSetting['period'] = 'minute'
         m3LineSetting['barTimeInterval'] = 3
         m3LineSetting['mode'] = CtaLineBar.TICK_MODE
-        m3LineSetting['minDiff'] = self.minDiff
+        m3LineSetting['minDiff'] = 1
         m3LineSetting['shortSymbol'] = 'RB'
         m3LineSetting['is_7x24'] = False
-        bar_class = getCtaBarClass(self.kline_period)
+        bar_class = getCtaBarClass('minute')
         self.lineM3 = bar_class(self, self.onBarM3, m3LineSetting)
 
     # ----------------------------------------------------------------------
@@ -243,58 +243,3 @@ class MainForceBreakStrategy(CtaTemplate):
     def onTrade(self, trade):
         # 发出状态更新事件
         self.putEvent()
-
-
-if __name__ == '__main__':
-    # 提供直接双击回测的功能
-    # 导入PyQt4的包是为了保证matplotlib使用PyQt4而不是PySide，防止初始化出错
-    from ctaBacktesting import *
-    from PyQt4 import QtCore, QtGui
-
-    # 创建回测引擎
-    engine = BacktestingEngine()
-
-    # 设置引擎的回测模式为K线
-    engine.setBacktestingMode(engine.BAR_MODE)
-
-    # 设置回测用的数据起始日期
-    engine.setStartDate('20120101')
-
-    # 设置产品相关参数
-    engine.setSlippage(0.2)  # 股指1跳
-    engine.setRate(0.3 / 10000)  # 万0.3
-    engine.setSize(300)  # 股指合约大小
-    engine.setPriceTick(0.2)  # 股指最小价格变动
-
-    # 设置使用的历史数据库
-    engine.setDatabase(MINUTE_DB_NAME, 'IF0000')
-
-    # 在引擎中创建策略对象
-    d = {'atrLength': 11}
-    engine.initStrategy(AtrRsiStrategy, d)
-
-    # 开始跑回测
-    engine.runBacktesting()
-
-    # 显示回测结果
-    engine.showBacktestingResult()
-
-    ## 跑优化
-    # setting = OptimizationSetting()                 # 新建一个优化任务设置对象
-    # setting.setOptimizeTarget('capital')            # 设置优化排序的目标是策略净盈利
-    # setting.addParameter('atrLength', 12, 20, 2)    # 增加第一个优化参数atrLength，起始11，结束12，步进1
-    # setting.addParameter('atrMa', 20, 30, 5)        # 增加第二个优化参数atrMa，起始20，结束30，步进1
-    # setting.addParameter('rsiLength', 5)            # 增加一个固定数值的参数
-
-    ## 性能测试环境：I7-3770，主频3.4G, 8核心，内存16G，Windows 7 专业版
-    ## 测试时还跑着一堆其他的程序，性能仅供参考
-    # import time
-    # start = time.time()
-
-    ## 运行单进程优化函数，自动输出结果，耗时：359秒
-    # engine.runOptimization(AtrRsiStrategy, setting)
-
-    ## 多进程优化，耗时：89秒
-    ##engine.runParallelOptimization(AtrRsiStrategy, setting)
-
-    # print u'耗时：%s' %(time.time()-start)
