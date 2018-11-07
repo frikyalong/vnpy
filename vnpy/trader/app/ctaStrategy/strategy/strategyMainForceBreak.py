@@ -176,11 +176,13 @@ class MainForceBreakStrategy(CtaTemplate):
         self.putEvent()
 
     def onBarM5(self, m5Bar):
+        self.writeCtaLog(u'onBarM5')
         self.writeCtaLog(self.lineM5.displayLastBar())
 
         # if m5Bar.datetime.hour < 21:
         #     return
         if self.fiveMinKCount <= self.fiveMinK:
+            self.writeCtaLog(u'top 5 bars')
             self.fiveMinKCount += 1
             if self.m5HighValue == 0:
                 self.m5HighValue = m5Bar.high
@@ -205,6 +207,7 @@ class MainForceBreakStrategy(CtaTemplate):
                 self.isContinuousRise = False
 
         if len(self.lineM5.lineBar) > 5:
+            self.writeCtaLog(u'out of 5 bars')
             self.m5PreVolume = self.m5CurVolume
             self.m5CurVolume = m5Bar.volume
             self.m5PreOpenInterest = self.m5CurOpenInterest
@@ -213,21 +216,27 @@ class MainForceBreakStrategy(CtaTemplate):
             self.m5PreChangeArray[-1] = abs(m5Bar.high - m5Bar.low)
 
             if self.isContinuousRise:
+                self.writeCtaLog(u'+--- isContinuousRise')
                 return
 
             if self.isBigChange:
+                self.writeCtaLog(u'+--- isBigChange')
                 return
 
             if m5Bar.close < self.m5HighValue:
+                self.writeCtaLog(u'+--- 5Bar.close < self.m5HighValue')
                 return
 
             if m5Bar.openInterest > self.m5HighOpenInterest or m5Bar.openInterest > self.m5PreOpenInterest:
+                self.writeCtaLog(u'+--- m5Bar.openInterest > self.m5HighOpenInterest or m5Bar.openInterest > self.m5PreOpenIntereste')
                 if m5Bar.volume > self.m5HighValue * 0.7 or m5Bar.volume > self.m5PreVolume:
+                    self.writeCtaLog(u'+--- m5Bar.volume > self.m5HighValue * 0.7 or m5Bar.volume > self.m5PreVolume')
                     change = abs(m5Bar.high - m5Bar.low)
                     for item in self.m5PreChangeArray:
                         if change < item:
                             return
                     ddRobot = dingRobot()
+                    self.writeCtaLog(u'+--- send message')
                     ddRobot.postStart(u'{0}可以开多仓, 当前价{1}, 前5分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.
                                       format(m5Bar.symbol, m5Bar.close, self.m5HighValue, self.m5HighVolume, self.m5HighOpenInterest, m5Bar.volume, m5Bar.openInterest))
 
