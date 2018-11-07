@@ -2,6 +2,7 @@
 import talib
 import numpy as np
 
+from vnpy.trader.app.ctaStrategy.strategy.dingTalkSend import dingRobot
 from vnpy.trader.app.ctaStrategy.ctaBase import *
 from vnpy.trader.app.ctaStrategy.ctaTemplate import CtaTemplate
 
@@ -21,6 +22,26 @@ class MainForceBreakStrategy(CtaTemplate):
     fixedSize = 1  # 每次交易的数量
 
     # 策略变量
+    # -----------
+    highValue = 0
+    highOpenInterest = 0
+    highVolume = 0
+    highChange = 0
+
+    lowValue = 0
+    lowOpenInterest = 0
+    lowVolume = 0
+    lowChange = 0
+
+    preVolume = 0
+    preChange = 0
+    preTwoChange = 0
+    preThreeChange = 0
+
+    fiveMinK = 5
+    threeMinK = 9
+
+    # -----------
     bar = None  # K线对象
     barMinute = EMPTY_STRING  # K线当前的分钟
 
@@ -73,6 +94,8 @@ class MainForceBreakStrategy(CtaTemplate):
         # 否则会出现多个策略实例之间数据共享的情况，有可能导致潜在的策略逻辑错误风险，
         # 策略类中的这些可变对象属性可以选择不写，全都放在__init__下面，写主要是为了阅读
         # 策略时方便（更多是个编程习惯的选择）
+        ddRobot = dingRobot()
+        ddRobot.postStart('可以下单啦， 666')
 
     # ----------------------------------------------------------------------
     def onInit(self):
@@ -109,6 +132,7 @@ class MainForceBreakStrategy(CtaTemplate):
             bar.high = tick.lastPrice
             bar.low = tick.lastPrice
             bar.close = tick.lastPrice
+            bar.openInterest = tick.openInterest
 
             bar.date = tick.date
             bar.time = tick.time
