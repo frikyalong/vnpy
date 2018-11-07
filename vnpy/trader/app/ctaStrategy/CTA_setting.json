@@ -1,43 +1,14 @@
 [
-
-{
-          "name": "S30_AtrRsiStrategy",
-          "className": "AtrRsiStrategy",
-          "vtSymbol": "rb1810;rb1901",
-          "symbol": "rb1810;rb1901",
-          "shortSymbol":"RB",
-          "Leg1Symbol":"rb1810",
-          "Leg2Symbol":"rb1901",
-          "baseUpLine":300,
-          "baseMidLine":0,
-          "baseDnLine":-300,
-          "minDiff":1,
-          "inputSS":2,
-          "height":3,
-          "win":5,
-          "maxPos":36,
-          "maxLots":15,
-          "mode":"tick"
-      }
-  ,
   {
-          "name": "S30_HCRB10",
-          "className": "Strategy30",
-          "vtSymbol": "hc1810;rb1810",
-          "symbol": "hc1810;rb1810",
-          "shortSymbol":"RB",
-          "Leg1Symbol":"hc1810",
-          "Leg2Symbol":"rb1810",
-          "baseUpLine":300,
-          "baseMidLine":150,
-          "baseDnLine":10,
-          "minDiff":1,
-          "inputSS":2,
-          "height":3,
-          "win":5,
-          "maxPos":36,
-          "maxLots":15,
-          "mode":"tick"
+          "name": "S30_MainForceBreakStrategy",
+          "className": "MainForceBreakStrategy",
+          "vtSymbol": "rb1901;ru1901;m1901;i1901;cu1901;ni1901;hc1901;y1901;jm1901;cf1901;zn1901;sr1901",
+          "symbol": "rb1901;ru1901;m1901;i1901;cu1901;ni1901;hc1901;y1901;jm1901;cf1901;zn1901;sr1901",
+          "startTime": "21:00",
+          "klineType1": 5,
+          "klineType1EndTime": "21:25",
+          "klineType2": 3,
+          "klineType1EndTime": "21:27",
+          "endTime": "14:30"
       }
-
 ]

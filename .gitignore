@@ -2,6 +2,8 @@
 ipch/
 Release/
 vnpy/api/ctp/build/
+logs/
+temp/
 
 *.so
 *.sdf
