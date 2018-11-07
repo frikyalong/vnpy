@@ -76,39 +76,24 @@ class MainForceBreakStrategy(CtaTemplate):
 
     # ----------------------------------------------------------------------
     def onInit(self):
-        """初始化策略（必须由用户继承实现）"""
         self.writeCtaLog(u'%s策略初始化' % self.name)
-
-        # 初始化RSI入场阈值
-        self.rsiBuy = 50 + self.rsiEntry
-        self.rsiSell = 50 - self.rsiEntry
-
-        # 载入历史数据，并采用回放计算的方式初始化策略数值
-        initData = self.loadBar(self.initDays)
-        for bar in initData:
-            self.onBar(bar)
-
         self.putEvent()
 
     # ----------------------------------------------------------------------
     def onStart(self):
-        """启动策略（必须由用户继承实现）"""
         self.writeCtaLog(u'%s策略启动' % self.name)
         self.putEvent()
 
     # ----------------------------------------------------------------------
     def onStop(self):
-        """停止策略（必须由用户继承实现）"""
         self.writeCtaLog(u'%s策略停止' % self.name)
         self.putEvent()
 
     # ----------------------------------------------------------------------
     def onTick(self, tick):
-        """收到行情TICK推送（必须由用户继承实现）"""
         # 计算K线
         print('*' * 20 + 'onTick start' + '*' * 20)
-        print(tick)
-        print('*' * 20 + 'onTick end' + '*' * 20)
+        print('\n'.join(['%s:%s' % item for item in tick.__dict__.items()]))
         tickMinute = tick.datetime.minute
 
         if tickMinute != self.barMinute:
@@ -141,8 +126,7 @@ class MainForceBreakStrategy(CtaTemplate):
     # ----------------------------------------------------------------------
     def onBar(self, bar):
         print('-' * 20 + 'onBar start' + '-' * 20)
-        print(bar)
-        print('-' * 20 + 'onBar end' + '-' * 20)
+        print('\n'.join(['%s:%s' % item for item in bar.__dict__.items()]))
         """收到Bar推送（必须由用户继承实现）"""
         # 撤销之前发出的尚未成交的委托（包括限价单和停止单）
         for orderID in self.orderList:
@@ -182,40 +166,40 @@ class MainForceBreakStrategy(CtaTemplate):
         # 判断是否要进行交易
 
         # 当前无仓位
-        if self.pos == 0:
-            self.intraTradeHigh = bar.high
-            self.intraTradeLow = bar.low
-
-            # ATR数值上穿其移动平均线，说明行情短期内波动加大
-            # 即处于趋势的概率较大，适合CTA开仓
-            if self.atrValue > self.atrMa:
-                # 使用RSI指标的趋势行情时，会在超买超卖区钝化特征，作为开仓信号
-                if self.rsiValue > self.rsiBuy:
-                    # 这里为了保证成交，选择超价5个整指数点下单
-                    self.buy(bar.close + 5, self.fixedSize)
-
-                elif self.rsiValue < self.rsiSell:
-                    self.short(bar.close - 5, self.fixedSize)
-
-        # 持有多头仓位
-        elif self.pos > 0:
-            # 计算多头持有期内的最高价，以及重置最低价
-            self.intraTradeHigh = max(self.intraTradeHigh, bar.high)
-            self.intraTradeLow = bar.low
-            # 计算多头移动止损
-            longStop = self.intraTradeHigh * (1 - self.trailingPercent / 100)
-            # 发出本地止损委托，并且把委托号记录下来，用于后续撤单
-            orderID = self.sell(longStop, abs(self.pos), stop=True)
-            self.orderList.append(orderID)
-
-        # 持有空头仓位
-        elif self.pos < 0:
-            self.intraTradeLow = min(self.intraTradeLow, bar.low)
-            self.intraTradeHigh = bar.high
-
-            shortStop = self.intraTradeLow * (1 + self.trailingPercent / 100)
-            orderID = self.cover(shortStop, abs(self.pos), stop=True)
-            self.orderList.append(orderID)
+        # if self.pos == 0:
+        #     self.intraTradeHigh = bar.high
+        #     self.intraTradeLow = bar.low
+        #
+        #     # ATR数值上穿其移动平均线，说明行情短期内波动加大
+        #     # 即处于趋势的概率较大，适合CTA开仓
+        #     if self.atrValue > self.atrMa:
+        #         # 使用RSI指标的趋势行情时，会在超买超卖区钝化特征，作为开仓信号
+        #         if self.rsiValue > self.rsiBuy:
+        #             # 这里为了保证成交，选择超价5个整指数点下单
+        #             self.buy(bar.close + 5, self.fixedSize)
+        #
+        #         elif self.rsiValue < self.rsiSell:
+        #             self.short(bar.close - 5, self.fixedSize)
+        #
+        # # 持有多头仓位
+        # elif self.pos > 0:
+        #     # 计算多头持有期内的最高价，以及重置最低价
+        #     self.intraTradeHigh = max(self.intraTradeHigh, bar.high)
+        #     self.intraTradeLow = bar.low
+        #     # 计算多头移动止损
+        #     longStop = self.intraTradeHigh * (1 - self.trailingPercent / 100)
+        #     # 发出本地止损委托，并且把委托号记录下来，用于后续撤单
+        #     orderID = self.sell(longStop, abs(self.pos), stop=True)
+        #     self.orderList.append(orderID)
+        #
+        # # 持有空头仓位
+        # elif self.pos < 0:
+        #     self.intraTradeLow = min(self.intraTradeLow, bar.low)
+        #     self.intraTradeHigh = bar.high
+        #
+        #     shortStop = self.intraTradeLow * (1 + self.trailingPercent / 100)
+        #     orderID = self.cover(shortStop, abs(self.pos), stop=True)
+        #     self.orderList.append(orderID)
 
         # 发出状态更新事件
         self.putEvent()
