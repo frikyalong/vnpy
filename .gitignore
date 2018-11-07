@@ -1,9 +1,11 @@
 ﻿# C++源代码
 ipch/
 Release/
+vnpy/api/ctp/build/
 logs/
 temp/
 
+*.so
 *.sdf
 *.sln
 *.suo
