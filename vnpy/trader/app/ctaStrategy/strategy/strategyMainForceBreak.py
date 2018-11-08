@@ -135,11 +135,15 @@ class MainForceBreakStrategy(CtaTemplate):
 
     # ----------------------------------------------------------------------
     def onTick(self, tick):
+        # print('*' * 20 + 'onTick start' + '*' * 20)
+        # print('\n'.join(['%s:%s' % item for item in tick.__dict__.items()]))
         # 计算K线
-        if tick.vtSymbol == 'rb1901':
-	    print('get rb1901 data')
-            self.lineM5.onTick(copy.copy(tick))
-            self.lineM3.onTick(copy.copy(tick))
+        if hasattr(tick, 'vtSymbol'):
+            # print('*' * 20 + 'onTick start' + '*' * 20)
+            # print('\n'.join(['%s:%s' % item for item in tick.__dict__.items()]))
+            if tick.vtSymbol == 'rb1901':
+                self.lineM5.onTick(copy.copy(tick))
+                self.lineM3.onTick(copy.copy(tick))
 
         tickMinute = tick.datetime.minute
 
