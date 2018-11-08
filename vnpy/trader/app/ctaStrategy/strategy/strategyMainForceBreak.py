@@ -92,10 +92,6 @@ class MainForceBreakStrategy(CtaTemplate):
         # 策略时方便（更多是个编程习惯的选择）
         # ddRobot = dingRobot()
         # ddRobot.postStart('可以下单啦， 666')
-        MARKET = {'RB', 'RU', 'M', 'I', 'CU', 'NI', 'HC' ,'Y', 'JM', 'CF', 'ZN', 'SR'}
-        aa = {
-            'market': {name: 'RB', setting: m5LineSettingBase}
-        }
         m5LineSettingBase = {}
         m5LineSettingBase['name'] = 'M5'
         m5LineSettingBase['period'] = 'minute'
