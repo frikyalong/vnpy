@@ -355,67 +355,67 @@ class MainForceBreakStrategy(CtaTemplate):
         curSymbol = m5Bar.symbol[:-4].upper()
         curVarList = self.MARKET[curSymbol]['varList']
 
-        if curVarList.fiveMinKCount <= curVarList.fiveMinK:
+        if curVarList['fiveMinKCount'] <= curVarList['fiveMinK']:
             self.writeCtaLog(u'top 5 bars')
-            curVarList.fiveMinKCount += 1
-            if curVarList.m5HighValue == 0:
-                curVarList.m5HighValue = m5Bar.high
+            curVarList['fiveMinKCount'] += 1
+            if curVarList['m5HighValue'] == 0:
+                curVarList['m5HighValue'] = m5Bar.high
 
-            if curVarList.m5LowValue == 0:
-                curVarList.m5LowValue = m5Bar.high
+            if curVarList['m5LowValue'] == 0:
+                curVarList['m5LowValue'] = m5Bar.high
 
-            curVarList.m5HighValue = max(curVarList.m5HighValue, m5Bar.high)
-            if curVarList.m5HighValue == m5Bar.high:
-                curVarList.m5HighOpenInterest = m5Bar.openInterest
-                curVarList.m5HighVolume = m5Bar.volume
-                curVarList.m5HighChange = abs(m5Bar.high - m5Bar.low)
+            curVarList['m5HighValue'] = max(curVarList['m5HighValue'], m5Bar.high)
+            if curVarList['m5HighValue'] == m5Bar.high:
+                curVarList['m5HighOpenInterest'] = m5Bar.openInterest
+                curVarList['m5HighVolume'] = m5Bar.volume
+                curVarList['m5HighChange'] = abs(m5Bar.high - m5Bar.low)
 
-            curVarList.m5LowValue = min(curVarList.m5HighValue, m5Bar.high)
-            if curVarList.m5LowValue == m5Bar.low:
-                curVarList.m5LowOpenInterest = m5Bar.openInterest
-                curVarList.m5LowVolume = m5Bar.volume
-                curVarList.m5LowChange = abs(m5Bar.high - m5Bar.low)
+            curVarList['m5LowValue'] = min(curVarList['m5HighValue'], m5Bar.high)
+            if curVarList['m5LowValue'] == m5Bar.low:
+                curVarList['m5LowOpenInterest'] = m5Bar.openInterest
+                curVarList['m5LowVolume'] = m5Bar.volume
+                curVarList['m5LowChange'] = abs(m5Bar.high - m5Bar.low)
             if abs(m5Bar.high - m5Bar.low) > m5Bar.close * 0.016:
-                curVarList.isBigChange = True
+                curVarList['isBigChange'] = True
             if m5Bar.close < m5Bar.open:
-                curVarList.isContinuousRise = False
-        if curVarList.fiveMinKCount >= 5:
+                curVarList['isContinuousRise'] = False
+        if curVarList['fiveMinKCount'] >= 5:
             self.writeCtaLog(u'out of 5 bars')
-            curVarList.m5PreVolume = curVarList.m5CurVolume
-            curVarList.m5CurVolume = m5Bar.volume
-            curVarList.m5PreOpenInterest = curVarList.m5CurOpenInterest
-            curVarList.m5CurOpenInterest = m5Bar.openInterest
-            curVarList.m5PreChangeArray[0:4] = curVarList.m5PreChangeArray[1:5]
-            curVarList.m5PreChangeArray[-1] = abs(m5Bar.high - m5Bar.low)
+            curVarList['m5PreVolume'] = curVarList['m5CurVolume']
+            curVarList['m5CurVolume'] = m5Bar.volume
+            curVarList['m5PreOpenInterest'] = curVarList['m5CurOpenInterest']
+            curVarList['m5CurOpenInterest'] = m5Bar.openInterest
+            curVarList['m5PreChangeArray'][0:4] = curVarList['m5PreChangeArray'][1:5]
+            curVarList['m5PreChangeArray'][-1] = abs(m5Bar.high - m5Bar.low)
 
             self.MARKET[curSymbol]['varList'] = curVarList
 
             self.writeCtaCritical(u'{0}: 当前价{1}, 前5分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.format(
-                m5Bar.symbol, m5Bar.close, curVarList.m5HighValue, curVarList.m5HighVolume, curVarList.m5HighOpenInterest, m5Bar.volume, m5Bar.openInterest))
-            if curVarList.isContinuousRise:
+                m5Bar.symbol, m5Bar.close, curVarList['m5HighValue'], curVarList['m5HighVolume'], curVarList['m5HighOpenInterest'], m5Bar.volume, m5Bar.openInterest))
+            if curVarList['isContinuousRise']:
                 self.writeCtaLog(u'+--- isContinuousRise')
                 return
 
-            if curVarList.isBigChange:
+            if curVarList['isBigChange']:
                 self.writeCtaLog(u'+--- isBigChange')
                 return
 
-            if m5Bar.close < curVarList.m5HighValue:
+            if m5Bar.close < curVarList['m5HighValue']:
                 self.writeCtaLog(u'+--- 5Bar.close < self.m5HighValue')
                 return
 
-            if m5Bar.openInterest > curVarList.m5HighOpenInterest or m5Bar.openInterest > curVarList.m5PreOpenInterest:
+            if m5Bar.openInterest > curVarList['m5HighOpenInterest'] or m5Bar.openInterest > curVarList['m5PreOpenInterest']:
                 self.writeCtaLog(u'+--- m5Bar.openInterest > self.m5HighOpenInterest or m5Bar.openInterest > self.m5PreOpenIntereste')
-                if m5Bar.volume > curVarList.m5HighValue * 0.7 or m5Bar.volume > curVarList.m5PreVolume:
+                if m5Bar.volume > curVarList['m5HighValue'] * 0.7 or m5Bar.volume > curVarList['m5PreVolume']:
                     self.writeCtaLog(u'+--- m5Bar.volume > self.m5HighValue * 0.7 or m5Bar.volume > self.m5PreVolume')
                     change = abs(m5Bar.high - m5Bar.low)
-                    for item in curVarList.m5PreChangeArray:
+                    for item in curVarList['m5PreChangeArray']:
                         if change < item:
                             return
                     ddRobot = dingRobot()
                     self.writeCtaLog(u'+--- send message')
                     ddRobot.postStart(u'{0}可以开多仓, 当前价{1}, 前5分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.
-                                      format(m5Bar.symbol, m5Bar.close, curVarList.m5HighValue, curVarList.m5HighVolume, curVarList.m5HighOpenInterest, m5Bar.volume, m5Bar.openInterest))
+                                      format(m5Bar.symbol, m5Bar.close, curVarList['m5HighValue'], curVarList['m5HighVolume'], curVarList['m5HighOpenInterest'], m5Bar.volume, m5Bar.openInterest))
         # -----------------------
         # if m5Bar.datetime.hour < 21:
         #     return
