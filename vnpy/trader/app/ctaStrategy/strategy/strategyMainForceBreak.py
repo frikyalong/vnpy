@@ -278,6 +278,8 @@ class MainForceBreakStrategy(CtaTemplate):
             self.m5PreChangeArray[0:4] = self.m5PreChangeArray[1:5]
             self.m5PreChangeArray[-1] = abs(m5Bar.high - m5Bar.low)
 
+            self.writeCtaCritical(u'{0}: 当前价{1}, 前5分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.format(
+                m5Bar.symbol, m5Bar.close, self.m5HighValue, self.m5HighVolume, self.m5HighOpenInterest, m5Bar.volume, m5Bar.openInterest))
             if self.isContinuousRise:
                 self.writeCtaLog(u'+--- isContinuousRise')
                 return
