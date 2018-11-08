@@ -217,7 +217,7 @@ class MainForceBreakStrategy(CtaTemplate):
             self.m5CurVolume = m5Bar.volume
             self.m5PreOpenInterest = self.m5CurOpenInterest
             self.m5CurOpenInterest = m5Bar.openInterest
-            self.m5PreChangeArray[0:4] = self.m5PreChangeArray[1:4]
+            self.m5PreChangeArray[0:4] = self.m5PreChangeArray[1:5]
             self.m5PreChangeArray[-1] = abs(m5Bar.high - m5Bar.low)
 
             if self.isContinuousRise:
