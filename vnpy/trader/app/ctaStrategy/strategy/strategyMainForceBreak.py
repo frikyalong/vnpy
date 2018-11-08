@@ -213,45 +213,45 @@ class MainForceBreakStrategy(CtaTemplate):
         m3SRLineSetting['barTimeInterval'] = 3
 
         MARKET = {
-            'RB': {'name': 'RB', 'm5Setting': m5RBLineSetting, 'm5Setting': m5RBLineSetting, 'varList': copy.copy(self.varList)},
-            'RU': {'name': 'RU', 'm5Setting': m5RULineSetting, 'm5Setting': m5RULineSetting, 'varList': copy.copy(self.varList)},
-            'M': {'name': 'M', 'm5Setting': m5MLineSetting, 'm5Setting': m5MLineSetting, 'varList': copy.copy(self.varList)},
-            'I': {'name': 'I', 'm5Setting': m5ILineSetting, 'm5Setting': m5ILineSetting, 'varList': copy.copy(self.varList)},
-            'CU': {'name': 'CU', 'm5Setting': m5CULineSetting, 'm5Setting': m5CULineSetting, 'varList': copy.copy(self.varList)},
-            'NI': {'name': 'NI', 'm5Setting': m5NILineSetting, 'm5Setting': m5NILineSetting, 'varList': copy.copy(self.varList)},
-            'HC': {'name': 'HC', 'm5Setting': m5HCLineSetting, 'm5Setting': m5HCLineSetting, 'varList': copy.copy(self.varList)},
-            'Y': {'name': 'Y', 'm5Setting': m5YLineSetting, 'm5Setting': m5YLineSetting, 'varList': copy.copy(self.varList)},
-            'JM': {'name': 'JM', 'm5Setting': m5CFLineSetting, 'm5Setting': m5CFLineSetting, 'varList': copy.copy(self.varList)},
-            'CF': {'name': 'CF', 'm5Setting': m5RBLineSetting, 'm5Setting': m5RBLineSetting, 'varList': copy.copy(self.varList)},
-            'ZN': {'name': 'ZN', 'm5Setting': m5ZNLineSetting, 'm5Setting': m5ZNLineSetting, 'varList': copy.copy(self.varList)},
-            'SR': {'name': 'SR', 'm5Setting': m5SRLineSetting, 'm5Setting': m5SRLineSetting, 'varList': copy.copy(self.varList)},
+            'RB': {'name': 'RB', 'm5Setting': m5RBLineSetting, 'm3Setting': m5RBLineSetting, 'varList': copy.copy(self.varList)},
+            'RU': {'name': 'RU', 'm5Setting': m5RULineSetting, 'm3Setting': m5RULineSetting, 'varList': copy.copy(self.varList)},
+            'M': {'name': 'M', 'm5Setting': m5MLineSetting, 'm3Setting': m5MLineSetting, 'varList': copy.copy(self.varList)},
+            'I': {'name': 'I', 'm5Setting': m5ILineSetting, 'm3Setting': m5ILineSetting, 'varList': copy.copy(self.varList)},
+            'CU': {'name': 'CU', 'm5Setting': m5CULineSetting, 'm3Setting': m5CULineSetting, 'varList': copy.copy(self.varList)},
+            'NI': {'name': 'NI', 'm5Setting': m5NILineSetting, 'm3Setting': m5NILineSetting, 'varList': copy.copy(self.varList)},
+            'HC': {'name': 'HC', 'm5Setting': m5HCLineSetting, 'm3Setting': m5HCLineSetting, 'varList': copy.copy(self.varList)},
+            'Y': {'name': 'Y', 'm5Setting': m5YLineSetting, 'm3Setting': m5YLineSetting, 'varList': copy.copy(self.varList)},
+            'JM': {'name': 'JM', 'm5Setting': m5CFLineSetting, 'm3Setting': m5CFLineSetting, 'varList': copy.copy(self.varList)},
+            'CF': {'name': 'CF', 'm5Setting': m5RBLineSetting, 'm3Setting': m5RBLineSetting, 'varList': copy.copy(self.varList)},
+            'ZN': {'name': 'ZN', 'm5Setting': m5ZNLineSetting, 'm3Setting': m5ZNLineSetting, 'varList': copy.copy(self.varList)},
+            'SR': {'name': 'SR', 'm5Setting': m5SRLineSetting, 'm3Setting': m5SRLineSetting, 'varList': copy.copy(self.varList)},
         }
 
-        self.lineM5RB = bar_class(self, self.onBarM5, MARKET['RB'].m5RBLineSetting)
-        self.lineM5RU = bar_class(self, self.onBarM5, MARKET['RU'].m5RBLineSetting)
-        self.lineM5M = bar_class(self, self.onBarM5, MARKET['M'].m5RBLineSetting)
-        self.lineM5I = bar_class(self, self.onBarM5, MARKET['I'].m5RBLineSetting)
-        self.lineM5CU = bar_class(self, self.onBarM5, MARKET['CU'].m5RBLineSetting)
-        self.lineM5NI = bar_class(self, self.onBarM5, MARKET['NI'].m5RBLineSetting)
-        self.lineM5HC = bar_class(self, self.onBarM5, MARKET['HC'].m5RBLineSetting)
-        self.lineM5Y = bar_class(self, self.onBarM5, MARKET['Y'].m5RBLineSetting)
-        self.lineM5JM = bar_class(self, self.onBarM5, MARKET['JM'].m5RBLineSetting)
-        self.lineM5CF = bar_class(self, self.onBarM5, MARKET['CF'].m5RBLineSetting)
-        self.lineM5ZN = bar_class(self, self.onBarM5, MARKET['ZN'].m5RBLineSetting)
-        self.lineM5SR = bar_class(self, self.onBarM5, MARKET['SR'].m5RBLineSetting)
+        self.lineM5RB = bar_class(self, self.onBarM5, MARKET['RB']['m5Setting'])
+        self.lineM5RU = bar_class(self, self.onBarM5, MARKET['RU']['m5Setting'])
+        self.lineM5M = bar_class(self, self.onBarM5, MARKET['M']['m5Setting'])
+        self.lineM5I = bar_class(self, self.onBarM5, MARKET['I']['m5Setting'])
+        self.lineM5CU = bar_class(self, self.onBarM5, MARKET['CU']['m5Setting'])
+        self.lineM5NI = bar_class(self, self.onBarM5, MARKET['NI']['m5Setting'])
+        self.lineM5HC = bar_class(self, self.onBarM5, MARKET['HC']['m5Setting'])
+        self.lineM5Y = bar_class(self, self.onBarM5, MARKET['Y']['m5Setting'])
+        self.lineM5JM = bar_class(self, self.onBarM5, MARKET['JM']['m5Setting'])
+        self.lineM5CF = bar_class(self, self.onBarM5, MARKET['CF']['m5Setting'])
+        self.lineM5ZN = bar_class(self, self.onBarM5, MARKET['ZN']['m5Setting'])
+        self.lineM5SR = bar_class(self, self.onBarM5, MARKET['SR']['m5Setting'])
 
-        self.lineM3RB = bar_class(self, self.onBarM3, MARKET['RB'].m3LineSetting)
-        self.lineM3RU = bar_class(self, self.onBarM3, MARKET['RU'].m3LineSetting)
-        self.lineM3M = bar_class(self, self.onBarM3, MARKET['M'].m3LineSetting)
-        self.lineM3I = bar_class(self, self.onBarM3, MARKET['I'].m3LineSetting)
-        self.lineM3CU = bar_class(self, self.onBarM3, MARKET['CU'].m3LineSetting)
-        self.lineM3NI = bar_class(self, self.onBarM3, MARKET['NI'].m3LineSetting)
-        self.lineM3HC = bar_class(self, self.onBarM3, MARKET['HC'].m3LineSetting)
-        self.lineM3Y = bar_class(self, self.onBarM3, MARKET['Y'].m3LineSetting)
-        self.lineM3JM = bar_class(self, self.onBarM3, MARKET['JM'].m3LineSetting)
-        self.lineM3CF = bar_class(self, self.onBarM3, MARKET['CF'].m3LineSetting)
-        self.lineM3ZN = bar_class(self, self.onBarM3, MARKET['ZN'].m3LineSetting)
-        self.lineM3SR = bar_class(self, self.onBarM3, MARKET['SR'].m3LineSetting)
+        self.lineM3RB = bar_class(self, self.onBarM3, MARKET['RB']['m3Setting'])
+        self.lineM3RU = bar_class(self, self.onBarM3, MARKET['RU']['m3Setting'])
+        self.lineM3M = bar_class(self, self.onBarM3, MARKET['M']['m3Setting'])
+        self.lineM3I = bar_class(self, self.onBarM3, MARKET['I']['m3Setting'])
+        self.lineM3CU = bar_class(self, self.onBarM3, MARKET['CU']['m3Setting'])
+        self.lineM3NI = bar_class(self, self.onBarM3, MARKET['NI']['m3Setting'])
+        self.lineM3HC = bar_class(self, self.onBarM3, MARKET['HC']['m3Setting'])
+        self.lineM3Y = bar_class(self, self.onBarM3, MARKET['Y']['m3Setting'])
+        self.lineM3JM = bar_class(self, self.onBarM3, MARKET['JM']['m3Setting'])
+        self.lineM3CF = bar_class(self, self.onBarM3, MARKET['CF']['m3Setting'])
+        self.lineM3ZN = bar_class(self, self.onBarM3, MARKET['ZN']['m3Setting'])
+        self.lineM3SR = bar_class(self, self.onBarM3, MARKET['SR']['m3Setting'])
 
         # 创建5minsK线
         m5LineSetting = {}
