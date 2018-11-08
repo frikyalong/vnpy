@@ -206,8 +206,6 @@ class MainForceBreakStrategy(CtaTemplate):
             # print('*' * 20 + 'onTick start' + '*' * 20)
             # print('\n'.join(['%s:%s' % item for item in tick.__dict__.items()]))
             if tick.vtSymbol == 'rb1901':
-                self.lineM5.onTick(copy.copy(tick))
-                self.lineM3.onTick(copy.copy(tick))
                 self.lineM5RB.onTick(copy.copy(tick))
                 self.lineM3RB.onTick(copy.copy(tick))
             elif tick.vtSymbol == 'ru1901':
