@@ -92,6 +92,70 @@ class MainForceBreakStrategy(CtaTemplate):
         # 策略时方便（更多是个编程习惯的选择）
         # ddRobot = dingRobot()
         # ddRobot.postStart('可以下单啦， 666')
+        MARKET = {'RB', 'RU', 'M', 'I', 'CU', 'NI', 'HC' ,'Y', 'JM', 'CF', 'ZN', 'SR'}
+        aa = {
+            'market': {name: 'RB', setting: m5LineSettingBase}
+        }
+        m5LineSettingBase = {}
+        m5LineSettingBase['name'] = 'M5'
+        m5LineSettingBase['period'] = 'minute'
+        m5LineSettingBase['barTimeInterval'] = 5
+        m5LineSettingBase['mode'] = CtaLineBar.TICK_MODE
+        m5LineSettingBase['minDiff'] = 1
+        m5LineSettingBase['is_7x24'] = False
+        bar_class = getCtaBarClass('minute')
+
+        m5RBLineSetting = copy.copy(m5LineSettingBase)
+        m5RBLineSetting['shortSymbol'] = 'RB'
+
+        m5RULineSetting = copy.copy(m5LineSettingBase)
+        m5RULineSetting['shortSymbol'] = 'RU'
+
+        m5MLineSetting = copy.copy(m5LineSettingBase)
+        m5MLineSetting['shortSymbol'] = 'M'
+
+        m5ILineSetting = copy.copy(m5LineSettingBase)
+        m5ILineSetting['shortSymbol'] = 'I'
+
+        m5CULineSetting = copy.copy(m5LineSettingBase)
+        m5CULineSetting['shortSymbol'] = 'CU'
+
+        m5NILineSetting = copy.copy(m5LineSettingBase)
+        m5NILineSetting['shortSymbol'] = 'NI'
+
+        m5HCLineSetting = copy.copy(m5LineSettingBase)
+        m5HCLineSetting['shortSymbol'] = 'HC'
+
+        m5YLineSetting = copy.copy(m5LineSettingBase)
+        m5YLineSetting['shortSymbol'] = 'Y'
+
+        m5CFLineSetting = copy.copy(m5LineSettingBase)
+        m5CFLineSetting['shortSymbol'] = 'JM'
+
+        m5RBLineSetting = copy.copy(m5LineSettingBase)
+        m5RBLineSetting['shortSymbol'] = 'CF'
+
+        m5ZNLineSetting = copy.copy(m5LineSettingBase)
+        m5ZNLineSetting['shortSymbol'] = 'ZN'
+
+        m5SRLineSetting = copy.copy(m5LineSettingBase)
+        m5SRLineSetting['shortSymbol'] = 'SR'
+
+        # MARKET = {
+        #     'market': {name: 'RB', m5Setting: m5RBLineSetting},
+        #     'market': {name: 'RU', m5Setting: m5RULineSetting},
+        #     'market': {name: 'M', m5Setting: m5MLineSetting},
+        #     'market': {name: 'I', m5Setting: m5ILineSetting},
+        #     'market': {name: 'CU', m5Setting: m5CULineSetting},
+        #     'market': {name: 'NI', m5Setting: m5NILineSetting},
+        #     'market': {name: 'HC', m5Setting: m5HCLineSetting},
+        #     'market': {name: 'Y', m5Setting: m5YLineSetting},
+        #     'market': {name: 'JM', m5Setting: m5CFLineSetting},
+        #     'market': {name: 'CF', m5Setting: m5RBLineSetting},
+        #     'market': {name: 'ZN', m5Setting: m5ZNLineSetting},
+        #     'market': {name: 'SR', m5Setting: m5SRLineSetting},
+        # }
+
 
         # 创建5minsK线
         m5LineSetting = {}
@@ -103,7 +167,6 @@ class MainForceBreakStrategy(CtaTemplate):
         # m5LineSetting['shortSymbol'] = 'aa[:-4].upper()' rb
         m5LineSetting['shortSymbol'] = 'RB'
         m5LineSetting['is_7x24'] = False
-        bar_class = getCtaBarClass('minute')
         self.lineM5 = bar_class(self, self.onBarM5, m5LineSetting)
 
         # 创建3minsK线
@@ -115,7 +178,6 @@ class MainForceBreakStrategy(CtaTemplate):
         m3LineSetting['minDiff'] = 1
         m3LineSetting['shortSymbol'] = 'RB'
         m3LineSetting['is_7x24'] = False
-        bar_class = getCtaBarClass('minute')
         self.lineM3 = bar_class(self, self.onBarM3, m3LineSetting)
 
     # ----------------------------------------------------------------------
