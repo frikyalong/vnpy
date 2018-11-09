@@ -289,6 +289,9 @@ class MainForceBreakStrategy(CtaTemplate):
         # print('\n'.join(['%s:%s' % item for item in bar.__dict__.items()]))
         short_symbol = bar.symbol[:-4].upper()
         var_list = self.MARKET[short_symbol]['varList']
+        self.writeCtaLog('*' * 20 + short_symbol + 'before')
+        for (k, v) in self.MARKET[short_symbol]['varList'].items():
+            self.writeCtaLog('%s: %s' % (k, v))
 
         var_list['m5PreSwingArray'][0: var_list['bufferSize'] - 1] = \
             var_list['m5PreSwingArray'][1: var_list['bufferSize']]
@@ -326,51 +329,50 @@ class MainForceBreakStrategy(CtaTemplate):
             else:
                 var_list['isContinuousFall'] = False
 
-        for (k, v) in var_list.items():
-            self.writeCtaLog('%s: %s' % (k, v))
-        for item in var_list['m5PreSwingArray']:
-            self.writeCtaLog('m5PreSwingArray: %s' % item)
-
         self.MARKET[short_symbol]['varList'] = var_list
+        var_list = None
+        self.writeCtaLog('*' * 20 + short_symbol + 'after')
+        for (k, v) in self.MARKET[short_symbol]['varList'].items():
+            self.writeCtaLog('%s: %s' % (k, v))
 
-        if var_list['m5RecordedKline'] >= 5:
-            self.writeCtaLog(u'out of {} bars'.format(var_list['m5MaxRecordedKline']))
+        if self.MARKET[short_symbol]['varList']['m5RecordedKline'] >= 5:
+            self.writeCtaLog(u'out of {} bars'.format(self.MARKET[short_symbol]['varList']['m5MaxRecordedKline']))
             self.writeCtaLog(u'{0}: 当前价{1}, 前25分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.format(
-                bar.symbol, bar.close, var_list['m5HighValue'], var_list['m5HighVolume'], var_list['m5HighOpenInterest'], bar.volume, bar.openInterest))
+                bar.symbol, bar.close, self.MARKET[short_symbol]['varList']['m5HighValue'], self.MARKET[short_symbol]['varList']['m5HighVolume'], self.MARKET[short_symbol]['varList']['m5HighOpenInterest'], bar.volume, bar.openInterest))
 
-            if var_list['isContinuousRise']:
+            if self.MARKET[short_symbol]['varList']['isContinuousRise']:
                 self.writeCtaLog(u'前5根k线持续上涨不开仓')
                 return
-            if var_list['isContinuousRise']:
+            if self.MARKET[short_symbol]['varList']['isContinuousRise']:
                 self.writeCtaLog(u'前5根线持续下跌不开仓')
                 return
 
-            if var_list['isBigSwing']:
+            if self.MARKET[short_symbol]['varList']['isBigSwing']:
                 self.writeCtaLog(u'前5根K线的高点和低点幅度适当，不能差距太大，如果差价太大，不能开仓，其中参考范围是振幅差距在1.6%以内')
                 return
 
             swing_sum = 0
-            if bar.close > var_list['m5HighValue'] and bar.openInterest > var_list['m5PreOpenInterestArray'][-2] and bar.openInterest > var_list['m5HighOpenInterest'] * 0.5:
+            if bar.close > self.MARKET[short_symbol]['varList']['m5HighValue'] and bar.openInterest > self.MARKET[short_symbol]['varList']['m5PreOpenInterestArray'][-2] and bar.openInterest > self.MARKET[short_symbol]['varList']['m5HighOpenInterest'] * 0.5:
                 self.writeCtaLog(u'价格突破前5根5分钟K线最高点,持仓量增加')
-                if bar.volume > var_list['m5HighValue'] * 0.7 or bar.volume > var_list['m5PreVolumeArray'][-2]:
+                if bar.volume > self.MARKET[short_symbol]['varList']['m5HighValue'] * 0.7 or bar.volume > self.MARKET[short_symbol]['varList']['m5PreVolumeArray'][-2]:
                     self.writeCtaLog(u'成交量增加，成交量高于前面K线成交量或者成交量是高点K线的70%以上')
-                    for item in var_list['m5PreSwingArray'][7:10]:
+                    for item in self.MARKET[short_symbol]['varList']['m5PreSwingArray'][7:10]:
                         swing_sum = swing_sum + item
                     if bar.high - bar.low > (swing_sum/3 * 1.2):
                         self.writeCtaLog(u'中阳线 这跟K线是近期震荡的几根K线的振幅的1.2倍以上')
                         ddRobot = dingRobot()
                         self.writeCtaLog(u'send message')
                         ddRobot.postStart(u'{0}可以开多仓, 当前价{1}, 前5分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.
-                                          format(bar.symbol, bar.close, var_list['m5HighValue'], var_list['m5HighVolume'], var_list['m5HighOpenInterest'], bar.volume, bar.openInterest))
+                                          format(bar.symbol, bar.close, self.MARKET[short_symbol]['varList']['m5HighValue'], self.MARKET[short_symbol]['varList']['m5HighVolume'], self.MARKET[short_symbol]['varList']['m5HighOpenInterest'], bar.volume, bar.openInterest))
 
-            if bar.close < var_list['m5LowValue'] and bar.openInterest > var_list['m5PreOpenInterestArray'][-2] and bar.openInterest > var_list['m5LowOpenInterest'] * 0.5:
+            if bar.close < self.MARKET[short_symbol]['varList']['m5LowValue'] and bar.openInterest > self.MARKET[short_symbol]['varList']['m5PreOpenInterestArray'][-2] and bar.openInterest > self.MARKET[short_symbol]['varList']['m5LowOpenInterest'] * 0.5:
                 self.writeCtaLog(u'价格突破前5根5分钟K线最低点,持仓量减少')
                 if abs(bar.high - bar.low) > (swing_sum / 3 * 1.2):
                     self.writeCtaLog(u'这跟K线是近期震荡的几根K线的振幅的1.2倍以上')
                     ddRobot = dingRobot()
                     self.writeCtaLog(u'send message')
                     ddRobot.postStart(u'{0}可以开空仓, 当前价{1}, 前5分钟最低价{2}， 最低价时成交量{3}， 最低价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.
-                                      format(bar.symbol, bar.close, var_list['m5LowValue'], var_list['m5LowVolume'], var_list['m5LowOpenInterest'], bar.volume, bar.openInterest))
+                                      format(bar.symbol, bar.close, self.MARKET[short_symbol]['varList']['m5LowValue'], self.MARKET[short_symbol]['varList']['m5LowVolume'], self.MARKET[short_symbol]['varList']['m5LowOpenInterest'], bar.volume, bar.openInterest))
 
     def onBarM3(self, bar):
         self.writeCtaLog('*' * 20 + 'onBarM3 start' + '*' * 20)
