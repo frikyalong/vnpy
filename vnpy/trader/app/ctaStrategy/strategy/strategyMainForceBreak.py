@@ -289,9 +289,9 @@ class MainForceBreakStrategy(CtaTemplate):
         # print('\n'.join(['%s:%s' % item for item in bar.__dict__.items()]))
         short_symbol = bar.symbol[:-4].upper()
         var_list = self.MARKET[short_symbol]['varList']
-        self.writeCtaLog('*' * 20 + short_symbol + 'before')
-        for (k, v) in self.MARKET[short_symbol]['varList'].items():
-            self.writeCtaLog('%s: %s' % (k, v))
+        self.writeCtaLog('=' * 20 + id(var_list))
+        self.writeCtaLog('=' * 20 + id(self.MARKET[short_symbol]['varList']))
+        self.writeCtaLog('=' * 20 + id(self.MARKET[short_symbol]['varList']['m5PreSwingArray']))
 
         var_list['m5PreSwingArray'][0: var_list['bufferSize'] - 1] = \
             var_list['m5PreSwingArray'][1: var_list['bufferSize']]
