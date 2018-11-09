@@ -349,14 +349,14 @@ class MainForceBreakStrategy(CtaTemplate):
                 self.writeCtaLog(u'前5根K线的高点和低点幅度适当，不能差距太大，如果差价太大，不能开仓，其中参考范围是振幅差距在1.6%以内')
                 return
 
-            SwingSum = 0
+            swing_sum = 0
             if bar.close > var_list['m5HighValue'] and bar.openInterest > var_list['m5PreOpenInterestArray'][-2] and bar.openInterest > var_list['m5HighOpenInterest'] * 0.5:
                 self.writeCtaLog(u'价格突破前5根5分钟K线最高点,持仓量增加')
                 if bar.volume > var_list['m5HighValue'] * 0.7 or bar.volume > var_list['m5PreVolumeArray'][-2]:
                     self.writeCtaLog(u'成交量增加，成交量高于前面K线成交量或者成交量是高点K线的70%以上')
-                    for item in var_list['m5PreSwingArray']:
-                        SwingSum = SwingSum + item
-                    if abs(bar.high - bar.low) > (SwingSum/10 * 1.2):
+                    for item in var_list['m5PreSwingArray'][7:10]:
+                        swing_sum = swing_sum + item
+                    if bar.high - bar.low > (swing_sum/3 * 1.2):
                         self.writeCtaLog(u'中阳线 这跟K线是近期震荡的几根K线的振幅的1.2倍以上')
                         ddRobot = dingRobot()
                         self.writeCtaLog(u'send message')
@@ -365,11 +365,11 @@ class MainForceBreakStrategy(CtaTemplate):
 
             if bar.close < var_list['m5LowValue'] and bar.openInterest > var_list['m5PreOpenInterestArray'][-2] and bar.openInterest > var_list['m5LowOpenInterest'] * 0.5:
                 self.writeCtaLog(u'价格突破前5根5分钟K线最低点,持仓量减少')
-                if abs(bar.high - bar.low) > (SwingSum / 5 * 1.2):
+                if abs(bar.high - bar.low) > (swing_sum / 3 * 1.2):
                     self.writeCtaLog(u'这跟K线是近期震荡的几根K线的振幅的1.2倍以上')
                     ddRobot = dingRobot()
                     self.writeCtaLog(u'send message')
-                    ddRobot.postStart(u'{0}可以开空仓, 当前价{1}, 前5分钟最低价{2}， 最低价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.
+                    ddRobot.postStart(u'{0}可以开空仓, 当前价{1}, 前5分钟最低价{2}， 最低价时成交量{3}， 最低价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.
                                       format(bar.symbol, bar.close, var_list['m5LowValue'], var_list['m5LowVolume'], var_list['m5LowOpenInterest'], bar.volume, bar.openInterest))
 
     def onBarM3(self, bar):
