@@ -284,7 +284,8 @@ class MainForceBreakStrategy(CtaTemplate):
                 curVarList['isContinuousRise'] = False
             else:
                 curVarList['isContinuousFall'] = False
-            self.writeCtaCritical('\n'.join(['%s:%s' % item for item in curVarList.__dict__.items()]))
+            for (k, v) in curVarList.items():
+                self.writeCtaCritical('%s: %s' % (k, v))
             for item in curVarList['m5PreChangeArray']:
                 self.writeCtaCritical('m5PreChangeArray:' + item)
 
