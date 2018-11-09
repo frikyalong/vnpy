@@ -187,18 +187,18 @@ class MainForceBreakStrategy(CtaTemplate):
         m3SRLineSetting['minDiff'] = 1
 
         self.MARKET = {
-            'RB': {'name': 'RB', 'm5Setting': m5RBLineSetting, 'm3Setting': m3RBLineSetting, 'varList': copy.copy(self.varList)},
-            'RU': {'name': 'RU', 'm5Setting': m5RULineSetting, 'm3Setting': m3RULineSetting, 'varList': copy.copy(self.varList)},
-            'M': {'name': 'M', 'm5Setting': m5MLineSetting, 'm3Setting': m3MLineSetting, 'varList': copy.copy(self.varList)},
-            'I': {'name': 'I', 'm5Setting': m5ILineSetting, 'm3Setting': m3ILineSetting, 'varList': copy.copy(self.varList)},
-            'CU': {'name': 'CU', 'm5Setting': m5CULineSetting, 'm3Setting': m3CULineSetting, 'varList': copy.copy(self.varList)},
-            'NI': {'name': 'NI', 'm5Setting': m5NILineSetting, 'm3Setting': m3NILineSetting, 'varList': copy.copy(self.varList)},
-            'HC': {'name': 'HC', 'm5Setting': m5HCLineSetting, 'm3Setting': m3HCLineSetting, 'varList': copy.copy(self.varList)},
-            'Y': {'name': 'Y', 'm5Setting': m5YLineSetting, 'm3Setting': m3YLineSetting, 'varList': copy.copy(self.varList)},
-            'JM': {'name': 'JM', 'm5Setting': m5JMLineSetting, 'm3Setting': m3JMLineSetting, 'varList': copy.copy(self.varList)},
-            'CF': {'name': 'CF', 'm5Setting': m5CFLineSetting, 'm3Setting': m3CFLineSetting, 'varList': copy.copy(self.varList)},
-            'ZN': {'name': 'ZN', 'm5Setting': m5ZNLineSetting, 'm3Setting': m3ZNLineSetting, 'varList': copy.copy(self.varList)},
-            'SR': {'name': 'SR', 'm5Setting': m5SRLineSetting, 'm3Setting': m3SRLineSetting, 'varList': copy.copy(self.varList)},
+            'RB': {'name': 'RB', 'm5Setting': m5RBLineSetting, 'm3Setting': m3RBLineSetting, 'varList': copy.deepcopy(self.varList)},
+            'RU': {'name': 'RU', 'm5Setting': m5RULineSetting, 'm3Setting': m3RULineSetting, 'varList': copy.deepcopy(self.varList)},
+            'M': {'name': 'M', 'm5Setting': m5MLineSetting, 'm3Setting': m3MLineSetting, 'varList': copy.deepcopy(self.varList)},
+            'I': {'name': 'I', 'm5Setting': m5ILineSetting, 'm3Setting': m3ILineSetting, 'varList': copy.deepcopy(self.varList)},
+            'CU': {'name': 'CU', 'm5Setting': m5CULineSetting, 'm3Setting': m3CULineSetting, 'varList': copy.deepcopy(self.varList)},
+            'NI': {'name': 'NI', 'm5Setting': m5NILineSetting, 'm3Setting': m3NILineSetting, 'varList': copy.deepcopy(self.varList)},
+            'HC': {'name': 'HC', 'm5Setting': m5HCLineSetting, 'm3Setting': m3HCLineSetting, 'varList': copy.deepcopy(self.varList)},
+            'Y': {'name': 'Y', 'm5Setting': m5YLineSetting, 'm3Setting': m3YLineSetting, 'varList': copy.deepcopy(self.varList)},
+            'JM': {'name': 'JM', 'm5Setting': m5JMLineSetting, 'm3Setting': m3JMLineSetting, 'varList': copy.deepcopy(self.varList)},
+            'CF': {'name': 'CF', 'm5Setting': m5CFLineSetting, 'm3Setting': m3CFLineSetting, 'varList': copy.deepcopy(self.varList)},
+            'ZN': {'name': 'ZN', 'm5Setting': m5ZNLineSetting, 'm3Setting': m3ZNLineSetting, 'varList': copy.deepcopy(self.varList)},
+            'SR': {'name': 'SR', 'm5Setting': m5SRLineSetting, 'm3Setting': m3SRLineSetting, 'varList': copy.deepcopy(self.varList)},
         }
 
         self.lineM5RB = bar_class(self, self.onBarM5, self.MARKET['RB']['m5Setting'])
