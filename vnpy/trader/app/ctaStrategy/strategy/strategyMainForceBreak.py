@@ -287,7 +287,7 @@ class MainForceBreakStrategy(CtaTemplate):
             for (k, v) in curVarList.items():
                 self.writeCtaCritical('%s: %s' % (k, v))
             for item in curVarList['m5PreChangeArray']:
-                self.writeCtaCritical('m5PreChangeArray:' + item)
+                self.writeCtaCritical('m5PreChangeArray: %s' % item)
 
         if curVarList['fiveMinKCount'] >= 5:
             self.writeCtaCritical(u'out of 5 bars')
