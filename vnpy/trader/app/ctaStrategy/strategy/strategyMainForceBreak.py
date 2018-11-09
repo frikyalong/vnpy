@@ -289,9 +289,9 @@ class MainForceBreakStrategy(CtaTemplate):
         # print('\n'.join(['%s:%s' % item for item in bar.__dict__.items()]))
         short_symbol = bar.symbol[:-4].upper()
         var_list = self.MARKET[short_symbol]['varList']
-        self.writeCtaLog('=' * 20 + id(var_list))
-        self.writeCtaLog('=' * 20 + id(self.MARKET[short_symbol]['varList']))
-        self.writeCtaLog('=' * 20 + id(self.MARKET[short_symbol]['varList']['m5PreSwingArray']))
+        self.writeCtaLog('=' * 20 + str(id(var_list)))
+        self.writeCtaLog('=' * 20 + str(id(self.MARKET[short_symbol]['varList'])))
+        self.writeCtaLog('=' * 20 + str(id(self.MARKET[short_symbol]['varList']['m5PreSwingArray'])))
 
         var_list['m5PreSwingArray'][0: var_list['bufferSize'] - 1] = \
             var_list['m5PreSwingArray'][1: var_list['bufferSize']]
@@ -331,9 +331,9 @@ class MainForceBreakStrategy(CtaTemplate):
 
         self.MARKET[short_symbol]['varList'] = var_list
         var_list = None
-        self.writeCtaLog('*' * 20 + short_symbol + 'after')
-        for (k, v) in self.MARKET[short_symbol]['varList'].items():
-            self.writeCtaLog('%s: %s' % (k, v))
+        # self.writeCtaLog('*' * 20 + short_symbol + 'after')
+        # for (k, v) in self.MARKET[short_symbol]['varList'].items():
+        #     self.writeCtaLog('%s: %s' % (k, v))
 
         if self.MARKET[short_symbol]['varList']['m5RecordedKline'] >= 5:
             self.writeCtaLog(u'out of {} bars'.format(self.MARKET[short_symbol]['varList']['m5MaxRecordedKline']))
