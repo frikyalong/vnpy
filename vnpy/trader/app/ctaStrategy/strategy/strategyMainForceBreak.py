@@ -27,6 +27,9 @@ class MainForceBreakStrategy(CtaTemplate):
         'm5CurVolume': 0,
         'm5PreOpenInterest': 0,
         'm5CurOpenInterest': 0,
+        'm5PreHighArray': np.zeros(5),
+        'm5PreLowArray': np.zeros(5),
+        'm5PreHLChangeArray': np.zeros(5),
         'm5PreChangeArray': np.zeros(5),
         'm3HighValue': 0,
         'm3HighOpenInterest': 0,
@@ -254,10 +257,22 @@ class MainForceBreakStrategy(CtaTemplate):
     def onBarM5(self, m5Bar):
         self.writeCtaCritical('*' * 20 + 'onBarM5 start' + '*' * 20)
         # print('\n'.join(['%s:%s' % item for item in m5Bar.__dict__.items()]))
-
         curSymbol = m5Bar.symbol[:-4].upper()
         curVarList = self.MARKET[curSymbol]['varList']
 
+        if m5Bar.symbol == 'ru1901':
+            curVarList['m5PreHighArray'][0:4] = curVarList['m5PreHighArray'][1:5]
+            curVarList['m5PreLowArray'][0:4] = curVarList['m5PreLowArray'][1:5]
+            curVarList['m5PreHLChangeArray'][0:4] = curVarList['m5PreHLChangeArray'][1:5]
+            curVarList['m5PreHighArray'][-1] = m5Bar.high
+            curVarList['m5PreLowArray'][-1] = m5Bar.low
+            curVarList['m5PreHLChangeArray'][-1] = m5Bar.high - m5Bar.low
+            self.writeCtaCritical('high: %s' % m5Bar.high)
+            self.writeCtaCritical('low: %s' % m5Bar.low)
+            self.writeCtaCritical('m5PreHighArray: %s' % curVarList['m5PreHighArray'])
+            self.writeCtaCritical('m5PreLowArray: %s' % curVarList['m5PreLowArray'])
+            self.writeCtaCritical('m5PreHLChangeArray: %s' % curVarList['m5PreHLChangeArray'])
+        pass
         if curVarList['fiveMinKCount'] <= curVarList['fiveMinK']:
             self.writeCtaCritical(u'top 5 bars')
             curVarList['fiveMinKCount'] += 1
@@ -284,10 +299,10 @@ class MainForceBreakStrategy(CtaTemplate):
                 curVarList['isContinuousRise'] = False
             else:
                 curVarList['isContinuousFall'] = False
-            for (k, v) in curVarList.items():
-                self.writeCtaCritical('%s: %s' % (k, v))
-            for item in curVarList['m5PreChangeArray']:
-                self.writeCtaCritical('m5PreChangeArray: %s' % item)
+            # for (k, v) in curVarList.items():
+            #     self.writeCtaCritical('%s: %s' % (k, v))
+            # for item in curVarList['m5PreChangeArray']:
+            #     self.writeCtaCritical('m5PreChangeArray: %s' % item)
 
         if curVarList['fiveMinKCount'] >= 5:
             self.writeCtaCritical(u'out of 5 bars')
@@ -299,10 +314,10 @@ class MainForceBreakStrategy(CtaTemplate):
             curVarList['m5PreChangeArray'][-1] = abs(m5Bar.high - m5Bar.low)
 
             self.MARKET[curSymbol]['varList'] = curVarList
-            for (k, v) in curVarList.items():
-                self.writeCtaCritical('%s: %s' % (k, v))
-            for item in curVarList['m5PreChangeArray']:
-                self.writeCtaCritical('m5PreChangeArray: %s' % item)
+            # for (k, v) in curVarList.items():
+            #     self.writeCtaCritical('%s: %s' % (k, v))
+            # for item in curVarList['m5PreChangeArray']:
+            #     self.writeCtaCritical('m5PreChangeArray: %s' % item)
 
             self.writeCtaCritical(u'{0}: 当前价{1}, 前25分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.format(
                 m5Bar.symbol, m5Bar.close, curVarList['m5HighValue'], curVarList['m5HighVolume'], curVarList['m5HighOpenInterest'], m5Bar.volume, m5Bar.openInterest))
