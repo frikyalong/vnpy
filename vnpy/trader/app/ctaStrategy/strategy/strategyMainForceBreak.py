@@ -299,9 +299,10 @@ class MainForceBreakStrategy(CtaTemplate):
             curVarList['m5PreChangeArray'][-1] = abs(m5Bar.high - m5Bar.low)
 
             self.MARKET[curSymbol]['varList'] = curVarList
-            print('\n'.join(['%s:%s' % item for item in curVarList.__dict__.items()]))
+            for (k, v) in curVarList.items():
+                self.writeCtaCritical('%s: %s' % (k, v))
             for item in curVarList['m5PreChangeArray']:
-                print('m5PreChangeArray:' + item)
+                self.writeCtaCritical('m5PreChangeArray: %s' % item)
 
             self.writeCtaCritical(u'{0}: 当前价{1}, 前25分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.format(
                 m5Bar.symbol, m5Bar.close, curVarList['m5HighValue'], curVarList['m5HighVolume'], curVarList['m5HighOpenInterest'], m5Bar.volume, m5Bar.openInterest))
