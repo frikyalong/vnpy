@@ -32,7 +32,6 @@ class MainForceBreakStrategy(CtaTemplate):
         'm3HighOpenInterest': 0,
         'm3HighVolume': 0,
         'm3HighChange': 0,
-        'm3ChangeArray': np.zeros(5),
         'm3LowValue': 0,
         'm3LowOpenInterest': 0,
         'm3LowVolume': 0,
@@ -53,111 +52,117 @@ class MainForceBreakStrategy(CtaTemplate):
         """Constructor"""
         super(MainForceBreakStrategy, self).__init__(ctaEngine, setting)
         m5LineSettingBase = {}
-        m5LineSettingBase['name'] = 'M5'
         m5LineSettingBase['period'] = 'minute'
         m5LineSettingBase['barTimeInterval'] = 5
         m5LineSettingBase['mode'] = CtaLineBar.TICK_MODE
         m5LineSettingBase['minDiff'] = 1
         m5LineSettingBase['is_7x24'] = False
+
+        m3LineSettingBase = {}
+        m3LineSettingBase['period'] = 'minute'
+        m3LineSettingBase['barTimeInterval'] = 3
+        m3LineSettingBase['mode'] = CtaLineBar.TICK_MODE
+        m3LineSettingBase['minDiff'] = 1
+        m3LineSettingBase['is_7x24'] = False
         bar_class = getCtaBarClass('minute')
 
         m5RBLineSetting = copy.copy(m5LineSettingBase)
         m5RBLineSetting['shortSymbol'] = 'RB'
         m5RBLineSetting['name'] = 'M5RB'
-        m3RBLineSetting = copy.copy(m5RBLineSetting)
+        m3RBLineSetting = copy.copy(m3LineSettingBase)
+        m3RBLineSetting['shortSymbol'] = 'RB'
         m3RBLineSetting['name'] = 'M3RB'
-        m3RBLineSetting['barTimeInterval'] = 3
 
         m5RULineSetting = copy.copy(m5LineSettingBase)
         m5RULineSetting['shortSymbol'] = 'RU'
         m5RULineSetting['name'] = 'M5RU'
-        m3RULineSetting = copy.copy(m5RULineSetting)
+        m3RULineSetting = copy.copy(m3LineSettingBase)
+        m3RULineSetting['shortSymbol'] = 'RU'
         m3RULineSetting['name'] = 'M3RU'
-        m3RULineSetting['barTimeInterval'] = 3
 
         m5MLineSetting = copy.copy(m5LineSettingBase)
         m5MLineSetting['shortSymbol'] = 'M'
         m5MLineSetting['name'] = 'M5M'
-        m3MLineSetting = copy.copy(m5MLineSetting)
+        m3MLineSetting = copy.copy(m3LineSettingBase)
+        m3MLineSetting['shortSymbol'] = 'M'
         m3MLineSetting['name'] = 'M3M'
-        m3MLineSetting['barTimeInterval'] = 3
 
         m5ILineSetting = copy.copy(m5LineSettingBase)
         m5ILineSetting['shortSymbol'] = 'I'
         m5ILineSetting['name'] = 'M5I'
-        m3ILineSetting = copy.copy(m5ILineSetting)
+        m3ILineSetting = copy.copy(m3LineSettingBase)
+        m3ILineSetting['shortSymbol'] = 'I'
         m3ILineSetting['name'] = 'M3I'
-        m3ILineSetting['barTimeInterval'] = 3
 
         m5CULineSetting = copy.copy(m5LineSettingBase)
         m5CULineSetting['shortSymbol'] = 'CU'
         m5CULineSetting['name'] = 'M5CU'
-        m3CULineSetting = copy.copy(m5CULineSetting)
+        m3CULineSetting = copy.copy(m3LineSettingBase)
+        m3CULineSetting['shortSymbol'] = 'CU'
         m3CULineSetting['name'] = 'M3CU'
-        m3CULineSetting['barTimeInterval'] = 3
 
         m5NILineSetting = copy.copy(m5LineSettingBase)
         m5NILineSetting['shortSymbol'] = 'NI'
         m5NILineSetting['name'] = 'M5NI'
-        m3NILineSetting = copy.copy(m5NILineSetting)
+        m3NILineSetting = copy.copy(m3LineSettingBase)
+        m3NILineSetting['shortSymbol'] = 'NI'
         m3NILineSetting['name'] = 'M3NI'
-        m3NILineSetting['barTimeInterval'] = 3
 
         m5HCLineSetting = copy.copy(m5LineSettingBase)
         m5HCLineSetting['shortSymbol'] = 'HC'
         m5HCLineSetting['name'] = 'M5HC'
-        m3HCLineSetting = copy.copy(m5HCLineSetting)
+        m3HCLineSetting = copy.copy(m3LineSettingBase)
+        m3HCLineSetting['shortSymbol'] = 'HC'
         m3HCLineSetting['name'] = 'M3HC'
-        m3HCLineSetting['barTimeInterval'] = 3
 
         m5YLineSetting = copy.copy(m5LineSettingBase)
         m5YLineSetting['shortSymbol'] = 'Y'
         m5YLineSetting['name'] = 'M5Y'
-        m3YLineSetting = copy.copy(m5YLineSetting)
+        m3YLineSetting = copy.copy(m3LineSettingBase)
+        m3YLineSetting['shortSymbol'] = 'Y'
         m3YLineSetting['name'] = 'M3Y'
-        m3YLineSetting['barTimeInterval'] = 3
 
         m5JMLineSetting = copy.copy(m5LineSettingBase)
         m5JMLineSetting['shortSymbol'] = 'JM'
         m5JMLineSetting['name'] = 'M5JM'
-        m3JMLineSetting = copy.copy(m5JMLineSetting)
+        m3JMLineSetting = copy.copy(m3LineSettingBase)
+        m3JMLineSetting['shortSymbol'] = 'JM'
         m3JMLineSetting['name'] = 'M3JM'
-        m3JMLineSetting['barTimeInterval'] = 3
 
         m5CFLineSetting = copy.copy(m5LineSettingBase)
         m5CFLineSetting['shortSymbol'] = 'CF'
         m5CFLineSetting['name'] = 'M5CF'
-        m3CFLineSetting = copy.copy(m5CFLineSetting)
+        m3CFLineSetting = copy.copy(m3LineSettingBase)
+        m3CFLineSetting['shortSymbol'] = 'CF'
         m3CFLineSetting['name'] = 'M3CF'
-        m3CFLineSetting['barTimeInterval'] = 3
 
         m5ZNLineSetting = copy.copy(m5LineSettingBase)
         m5ZNLineSetting['shortSymbol'] = 'ZN'
         m5ZNLineSetting['name'] = 'M5ZN'
-        m3ZNLineSetting = copy.copy(m5ZNLineSetting)
+        m3ZNLineSetting = copy.copy(m3LineSettingBase)
+        m3ZNLineSetting['shortSymbol'] = 'ZN'
         m3ZNLineSetting['name'] = 'M3ZN'
-        m3ZNLineSetting['barTimeInterval'] = 3
 
         m5SRLineSetting = copy.copy(m5LineSettingBase)
         m5SRLineSetting['shortSymbol'] = 'SR'
         m5SRLineSetting['name'] = 'M5SR'
-        m3SRLineSetting = copy.copy(m5SRLineSetting)
+        m3SRLineSetting = copy.copy(m3LineSettingBase)
+        m3SRLineSetting['shortSymbol'] = 'SR'
         m3SRLineSetting['name'] = 'M3SR'
-        m3SRLineSetting['barTimeInterval'] = 3
 
         self.MARKET = {
-            'RB': {'name': 'RB', 'm5Setting': m5RBLineSetting, 'm3Setting': m5RBLineSetting, 'varList': copy.copy(self.varList)},
-            'RU': {'name': 'RU', 'm5Setting': m5RULineSetting, 'm3Setting': m5RULineSetting, 'varList': copy.copy(self.varList)},
-            'M': {'name': 'M', 'm5Setting': m5MLineSetting, 'm3Setting': m5MLineSetting, 'varList': copy.copy(self.varList)},
-            'I': {'name': 'I', 'm5Setting': m5ILineSetting, 'm3Setting': m5ILineSetting, 'varList': copy.copy(self.varList)},
-            'CU': {'name': 'CU', 'm5Setting': m5CULineSetting, 'm3Setting': m5CULineSetting, 'varList': copy.copy(self.varList)},
-            'NI': {'name': 'NI', 'm5Setting': m5NILineSetting, 'm3Setting': m5NILineSetting, 'varList': copy.copy(self.varList)},
-            'HC': {'name': 'HC', 'm5Setting': m5HCLineSetting, 'm3Setting': m5HCLineSetting, 'varList': copy.copy(self.varList)},
-            'Y': {'name': 'Y', 'm5Setting': m5YLineSetting, 'm3Setting': m5YLineSetting, 'varList': copy.copy(self.varList)},
-            'JM': {'name': 'JM', 'm5Setting': m5CFLineSetting, 'm3Setting': m5CFLineSetting, 'varList': copy.copy(self.varList)},
-            'CF': {'name': 'CF', 'm5Setting': m5RBLineSetting, 'm3Setting': m5RBLineSetting, 'varList': copy.copy(self.varList)},
-            'ZN': {'name': 'ZN', 'm5Setting': m5ZNLineSetting, 'm3Setting': m5ZNLineSetting, 'varList': copy.copy(self.varList)},
-            'SR': {'name': 'SR', 'm5Setting': m5SRLineSetting, 'm3Setting': m5SRLineSetting, 'varList': copy.copy(self.varList)},
+            'RB': {'name': 'RB', 'm5Setting': m5RBLineSetting, 'm3Setting': m3RBLineSetting, 'varList': copy.copy(self.varList)},
+            'RU': {'name': 'RU', 'm5Setting': m5RULineSetting, 'm3Setting': m3RULineSetting, 'varList': copy.copy(self.varList)},
+            'M': {'name': 'M', 'm5Setting': m5MLineSetting, 'm3Setting': m3MLineSetting, 'varList': copy.copy(self.varList)},
+            'I': {'name': 'I', 'm5Setting': m5ILineSetting, 'm3Setting': m3ILineSetting, 'varList': copy.copy(self.varList)},
+            'CU': {'name': 'CU', 'm5Setting': m5CULineSetting, 'm3Setting': m3CULineSetting, 'varList': copy.copy(self.varList)},
+            'NI': {'name': 'NI', 'm5Setting': m5NILineSetting, 'm3Setting': m3NILineSetting, 'varList': copy.copy(self.varList)},
+            'HC': {'name': 'HC', 'm5Setting': m5HCLineSetting, 'm3Setting': m3HCLineSetting, 'varList': copy.copy(self.varList)},
+            'Y': {'name': 'Y', 'm5Setting': m5YLineSetting, 'm3Setting': m3YLineSetting, 'varList': copy.copy(self.varList)},
+            'JM': {'name': 'JM', 'm5Setting': m5JMLineSetting, 'm3Setting': m3JMLineSetting, 'varList': copy.copy(self.varList)},
+            'CF': {'name': 'CF', 'm5Setting': m5CFLineSetting, 'm3Setting': m3CFLineSetting, 'varList': copy.copy(self.varList)},
+            'ZN': {'name': 'ZN', 'm5Setting': m5ZNLineSetting, 'm3Setting': m3ZNLineSetting, 'varList': copy.copy(self.varList)},
+            'SR': {'name': 'SR', 'm5Setting': m5SRLineSetting, 'm3Setting': m3SRLineSetting, 'varList': copy.copy(self.varList)},
         }
 
         self.lineM5RB = bar_class(self, self.onBarM5, self.MARKET['RB']['m5Setting'])
@@ -247,14 +252,14 @@ class MainForceBreakStrategy(CtaTemplate):
         self.putEvent()
 
     def onBarM5(self, m5Bar):
-        print('*' * 20 + 'onBarM5 start' + '*' * 20)
-        print('\n'.join(['%s:%s' % item for item in m5Bar.__dict__.items()]))
+        self.writeCtaCritical('*' * 20 + 'onBarM5 start' + '*' * 20)
+        # print('\n'.join(['%s:%s' % item for item in m5Bar.__dict__.items()]))
 
         curSymbol = m5Bar.symbol[:-4].upper()
         curVarList = self.MARKET[curSymbol]['varList']
 
         if curVarList['fiveMinKCount'] <= curVarList['fiveMinK']:
-            self.writeCtaLog(u'top 5 bars')
+            self.writeCtaCritical(u'top 5 bars')
             curVarList['fiveMinKCount'] += 1
             if curVarList['m5HighValue'] == 0:
                 curVarList['m5HighValue'] = m5Bar.high
@@ -279,9 +284,12 @@ class MainForceBreakStrategy(CtaTemplate):
                 curVarList['isContinuousRise'] = False
             else:
                 curVarList['isContinuousFall'] = False
+            self.writeCtaCritical('\n'.join(['%s:%s' % item for item in curVarList.__dict__.items()]))
+            for item in curVarList['m5PreChangeArray']:
+                self.writeCtaCritical('m5PreChangeArray:' + item)
 
         if curVarList['fiveMinKCount'] >= 5:
-            self.writeCtaLog(u'out of 5 bars')
+            self.writeCtaCritical(u'out of 5 bars')
             curVarList['m5PreVolume'] = curVarList['m5CurVolume']
             curVarList['m5CurVolume'] = m5Bar.volume
             curVarList['m5PreOpenInterest'] = curVarList['m5CurOpenInterest']
@@ -290,48 +298,50 @@ class MainForceBreakStrategy(CtaTemplate):
             curVarList['m5PreChangeArray'][-1] = abs(m5Bar.high - m5Bar.low)
 
             self.MARKET[curSymbol]['varList'] = curVarList
+            print('\n'.join(['%s:%s' % item for item in curVarList.__dict__.items()]))
+            for item in curVarList['m5PreChangeArray']:
+                print('m5PreChangeArray:' + item)
 
             self.writeCtaCritical(u'{0}: 当前价{1}, 前25分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.format(
                 m5Bar.symbol, m5Bar.close, curVarList['m5HighValue'], curVarList['m5HighVolume'], curVarList['m5HighOpenInterest'], m5Bar.volume, m5Bar.openInterest))
 
             if curVarList['isContinuousRise']:
-                self.writeCtaLog(u'前5根k线持续上涨不开仓')
+                self.writeCtaCritical(u'前5根k线持续上涨不开仓')
                 return
             if curVarList['isContinuousRise']:
-                self.writeCtaLog(u'前5根线持续下跌不开仓')
+                self.writeCtaCritical(u'前5根线持续下跌不开仓')
                 return
 
             if curVarList['isBigChange']:
-                self.writeCtaLog(u'前5根K线的高点和低点幅度适当，不能差距太大，如果差价太大，不能开仓，其中参考范围是振幅差距在1.6%以内')
+                self.writeCtaCritical(u'前5根K线的高点和低点幅度适当，不能差距太大，如果差价太大，不能开仓，其中参考范围是振幅差距在1.6%以内')
                 return
 
             changeSum = 0
-            if m5Bar.close > curVarList['m5HighValue'] and (m5Bar.openInterest > curVarList['m5HighOpenInterest'] or m5Bar.openInterest > curVarList['m5PreOpenInterest']):
-                self.writeCtaLog(u'价格突破前5根5分钟K线最高点,持仓量增加')
+            if m5Bar.close > curVarList['m5HighValue'] and m5Bar.openInterest > curVarList['m5PreOpenInterest'] and m5Bar.openInterest > curVarList['m5HighOpenInterest'] * 0.5:
+                self.writeCtaCritical(u'价格突破前5根5分钟K线最高点,持仓量增加')
                 if m5Bar.volume > curVarList['m5HighValue'] * 0.7 or m5Bar.volume > curVarList['m5PreVolume']:
-                    self.writeCtaLog(u'成交量增加，成交量高于前面K线成交量或者成交量是高点K线的70%以上')
+                    self.writeCtaCritical(u'成交量增加，成交量高于前面K线成交量或者成交量是高点K线的70%以上')
                     for item in curVarList['m5PreChangeArray']:
                         changeSum = changeSum + item
                     if abs(m5Bar.high - m5Bar.low) > (changeSum/5 * 1.2):
-                        self.writeCtaLog(u'中阳线 这跟K线是近期震荡的几根K线的振幅的1.2倍以上')
+                        self.writeCtaCritical(u'中阳线 这跟K线是近期震荡的几根K线的振幅的1.2倍以上')
                         ddRobot = dingRobot()
-                        self.writeCtaLog(u'+--- send message')
+                        self.writeCtaCritical(u'send message')
                         ddRobot.postStart(u'{0}可以开多仓, 当前价{1}, 前5分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.
-                                      format(m5Bar.symbol, m5Bar.close, curVarList['m5HighValue'], curVarList['m5HighVolume'], curVarList['m5HighOpenInterest'], m5Bar.volume, m5Bar.openInterest))
+                                          format(m5Bar.symbol, m5Bar.close, curVarList['m5HighValue'], curVarList['m5HighVolume'], curVarList['m5HighOpenInterest'], m5Bar.volume, m5Bar.openInterest))
 
-            if m5Bar.close < curVarList['m5LowValue'] and (m5Bar.openInterest < curVarList['m5LowOpenInterest'] or m5Bar.openInterest < curVarList['m5PreOpenInterest']):
-                self.writeCtaLog(u'价格突破前5根5分钟K线最低点,持仓量减少')
-                if abs(m5Bar.high - m5Bar.low) < (changeSum / 5 * 1.2):
-                    self.writeCtaLog(u'这跟K线是近期震荡的几根K线的振幅的1.2倍以下')
+            if m5Bar.close < curVarList['m5LowValue'] and m5Bar.openInterest > curVarList['m5PreOpenInterest'] and m5Bar.openInterest > curVarList['m5LowOpenInterest'] * 0.5:
+                self.writeCtaCritical(u'价格突破前5根5分钟K线最低点,持仓量减少')
+                if abs(m5Bar.high - m5Bar.low) > (changeSum / 5 * 1.2):
+                    self.writeCtaCritical(u'这跟K线是近期震荡的几根K线的振幅的1.2倍以上')
                     ddRobot = dingRobot()
-                    self.writeCtaLog(u'+--- send message')
-                    ddRobot.postStart(u'{0}可以开空仓, 当前价{1}, 前5分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.
-                                        format(m5Bar.symbol, m5Bar.close, curVarList['m5HighValue'], curVarList['m5HighVolume'], curVarList['m5HighOpenInterest'], m5Bar.volume, m5Bar.openInterest))
+                    self.writeCtaCritical(u'send message')
+                    ddRobot.postStart(u'{0}可以开空仓, 当前价{1}, 前5分钟最低价{2}， 最低价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.
+                                      format(m5Bar.symbol, m5Bar.close, curVarList['m5LowValue'], curVarList['m5LowVolume'], curVarList['m5LowOpenInterest'], m5Bar.volume, m5Bar.openInterest))
 
     def onBarM3(self, m3Bar):
-        print('*' * 20 + 'onBarM3 start' + '*' * 20)
-        print('\n'.join(['%s:%s' % item for item in m3Bar.__dict__.items()]))
-
+        self.writeCtaCritical('*' * 20 + 'onBarM3 start' + '*' * 20)
+        pass
         curSymbol = m3Bar.symbol[:-4].upper()
         curVarList = self.MARKET[curSymbol]['varList']
 
