@@ -260,7 +260,7 @@ class MainForceBreakStrategy(CtaTemplate):
         curSymbol = m5Bar.symbol[:-4].upper()
         curVarList = self.MARKET[curSymbol]['varList']
 
-        if m5Bar.symbol == 'ru1901':
+        if m5Bar.symbol == 'cu1901':
             curVarList['m5PreHighArray'][0:4] = curVarList['m5PreHighArray'][1:5]
             curVarList['m5PreLowArray'][0:4] = curVarList['m5PreLowArray'][1:5]
             curVarList['m5PreHLChangeArray'][0:4] = curVarList['m5PreHLChangeArray'][1:5]
