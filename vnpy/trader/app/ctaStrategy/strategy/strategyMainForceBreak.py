@@ -12,146 +12,179 @@ class MainForceBreakStrategy(CtaTemplate):
 
     # 变量列表，保存了变量的名称
     varList = {
-        'isBigChange': False,
+        'bufferSize': 10,
+        'isBigSwing': False,
         'isContinuousRise': True,
         'isContinuousFall': True,
         'm5HighValue': 0,
         'm5HighOpenInterest': 0,
         'm5HighVolume': 0,
-        'm5HighChange': 0,
+        'm5HighSwing': 0,
         'm5LowValue': 0,
         'm5LowOpenInterest': 0,
         'm5LowVolume': 0,
-        'm5LowChange': 0,
+        'm5LowSwing': 0,
         'm5PreVolume': 0,
         'm5CurVolume': 0,
         'm5PreOpenInterest': 0,
         'm5CurOpenInterest': 0,
-        'm5PreHighArray': np.zeros(5),
-        'm5PreLowArray': np.zeros(5),
-        'm5PreHLChangeArray': np.zeros(5),
-        'm5PreChangeArray': np.zeros(5),
+        'm5PreSwingArray': np.zeros(5),
+        'm5PreVolumeArray': np.zeros(5),
+        'm5PreOpenInterestArray': np.zeros(5),
+        'm5MaxRecordedKline': 5,
+        'm5RecordedKline': 0,
         'm3HighValue': 0,
         'm3HighOpenInterest': 0,
         'm3HighVolume': 0,
-        'm3HighChange': 0,
+        'm3HighSwing': 0,
         'm3LowValue': 0,
         'm3LowOpenInterest': 0,
         'm3LowVolume': 0,
-        'm3LowChange': 0,
+        'm3LowSwing': 0,
         'm3PreVolume': 0,
         'm3CurVolume': 0,
         'm3PreOpenInterest': 0,
         'm3CurOpenInterest': 0,
-        'm3PreChangeArray': np.zeros(5),
-        'fiveMinK': 5,
-        'fiveMinKCount': 0,
-        'threeMinK': 9,
-        'threeMinKCount': 0,
+        'm3PreSwingArray': np.zeros(5),
+        'm3MaxRecordedKline': 9,
+        'm3RecordedKline': 0,
     }
 
     # ----------------------------------------------------------------------
     def __init__(self, ctaEngine, setting):
         """Constructor"""
         super(MainForceBreakStrategy, self).__init__(ctaEngine, setting)
+        bar_class = getCtaBarClass('minute')
+
         m5LineSettingBase = {}
         m5LineSettingBase['period'] = 'minute'
         m5LineSettingBase['barTimeInterval'] = 5
         m5LineSettingBase['mode'] = CtaLineBar.TICK_MODE
-        m5LineSettingBase['minDiff'] = 1
-        m5LineSettingBase['is_7x24'] = False
 
         m3LineSettingBase = {}
         m3LineSettingBase['period'] = 'minute'
         m3LineSettingBase['barTimeInterval'] = 3
         m3LineSettingBase['mode'] = CtaLineBar.TICK_MODE
-        m3LineSettingBase['minDiff'] = 1
-        m3LineSettingBase['is_7x24'] = False
-        bar_class = getCtaBarClass('minute')
 
+        # 螺纹RB
         m5RBLineSetting = copy.copy(m5LineSettingBase)
         m5RBLineSetting['shortSymbol'] = 'RB'
         m5RBLineSetting['name'] = 'M5RB'
+        m5RBLineSetting['minDiff'] = 1
         m3RBLineSetting = copy.copy(m3LineSettingBase)
         m3RBLineSetting['shortSymbol'] = 'RB'
         m3RBLineSetting['name'] = 'M3RB'
+        m3RBLineSetting['minDiff'] = 1
 
+        # 橡胶RU
         m5RULineSetting = copy.copy(m5LineSettingBase)
         m5RULineSetting['shortSymbol'] = 'RU'
         m5RULineSetting['name'] = 'M5RU'
+        m5RULineSetting['minDiff'] = 5
         m3RULineSetting = copy.copy(m3LineSettingBase)
         m3RULineSetting['shortSymbol'] = 'RU'
         m3RULineSetting['name'] = 'M3RU'
+        m3RULineSetting['minDiff'] = 5
 
+        # 豆粕M
         m5MLineSetting = copy.copy(m5LineSettingBase)
         m5MLineSetting['shortSymbol'] = 'M'
         m5MLineSetting['name'] = 'M5M'
+        m5MLineSetting['minDiff'] = 1
         m3MLineSetting = copy.copy(m3LineSettingBase)
         m3MLineSetting['shortSymbol'] = 'M'
         m3MLineSetting['name'] = 'M3M'
+        m3MLineSetting['minDiff'] = 1
 
+        # 铁矿石I
         m5ILineSetting = copy.copy(m5LineSettingBase)
         m5ILineSetting['shortSymbol'] = 'I'
         m5ILineSetting['name'] = 'M5I'
+        m5ILineSetting['minDiff'] = 0.5
         m3ILineSetting = copy.copy(m3LineSettingBase)
         m3ILineSetting['shortSymbol'] = 'I'
         m3ILineSetting['name'] = 'M3I'
+        m3ILineSetting['minDiff'] = 0.5
 
+        # 沪铜CU
         m5CULineSetting = copy.copy(m5LineSettingBase)
         m5CULineSetting['shortSymbol'] = 'CU'
         m5CULineSetting['name'] = 'M5CU'
+        m5CULineSetting['minDiff'] = 10
         m3CULineSetting = copy.copy(m3LineSettingBase)
         m3CULineSetting['shortSymbol'] = 'CU'
         m3CULineSetting['name'] = 'M3CU'
+        m3CULineSetting['minDiff'] = 10
 
+        # 沪镍NI
         m5NILineSetting = copy.copy(m5LineSettingBase)
         m5NILineSetting['shortSymbol'] = 'NI'
         m5NILineSetting['name'] = 'M5NI'
+        m5NILineSetting['minDiff'] = 10
         m3NILineSetting = copy.copy(m3LineSettingBase)
         m3NILineSetting['shortSymbol'] = 'NI'
         m3NILineSetting['name'] = 'M3NI'
+        m3NILineSetting['minDiff'] = 10
 
+        # 热轧卷板HC
         m5HCLineSetting = copy.copy(m5LineSettingBase)
         m5HCLineSetting['shortSymbol'] = 'HC'
         m5HCLineSetting['name'] = 'M5HC'
+        m5HCLineSetting['minDiff'] = 2
         m3HCLineSetting = copy.copy(m3LineSettingBase)
         m3HCLineSetting['shortSymbol'] = 'HC'
         m3HCLineSetting['name'] = 'M3HC'
+        m3HCLineSetting['minDiff'] = 2
 
+        # 豆油Y
         m5YLineSetting = copy.copy(m5LineSettingBase)
         m5YLineSetting['shortSymbol'] = 'Y'
         m5YLineSetting['name'] = 'M5Y'
+        m5YLineSetting['minDiff'] = 2
         m3YLineSetting = copy.copy(m3LineSettingBase)
         m3YLineSetting['shortSymbol'] = 'Y'
         m3YLineSetting['name'] = 'M3Y'
+        m3YLineSetting['minDiff'] = 2
 
+        # 焦煤JM
         m5JMLineSetting = copy.copy(m5LineSettingBase)
         m5JMLineSetting['shortSymbol'] = 'JM'
         m5JMLineSetting['name'] = 'M5JM'
+        m5JMLineSetting['minDiff'] = 1
         m3JMLineSetting = copy.copy(m3LineSettingBase)
         m3JMLineSetting['shortSymbol'] = 'JM'
         m3JMLineSetting['name'] = 'M3JM'
+        m3JMLineSetting['minDiff'] = 1
 
+        # 棉花CF
         m5CFLineSetting = copy.copy(m5LineSettingBase)
         m5CFLineSetting['shortSymbol'] = 'CF'
         m5CFLineSetting['name'] = 'M5CF'
+        m5CFLineSetting['minDiff'] = 5
         m3CFLineSetting = copy.copy(m3LineSettingBase)
         m3CFLineSetting['shortSymbol'] = 'CF'
         m3CFLineSetting['name'] = 'M3CF'
+        m3CFLineSetting['minDiff'] = 5
 
+        # 沪锌ZN
         m5ZNLineSetting = copy.copy(m5LineSettingBase)
         m5ZNLineSetting['shortSymbol'] = 'ZN'
         m5ZNLineSetting['name'] = 'M5ZN'
+        m5ZNLineSetting['minDiff'] = 5
         m3ZNLineSetting = copy.copy(m3LineSettingBase)
         m3ZNLineSetting['shortSymbol'] = 'ZN'
         m3ZNLineSetting['name'] = 'M3ZN'
+        m3ZNLineSetting['minDiff'] = 5
 
+        # 白糖SR
         m5SRLineSetting = copy.copy(m5LineSettingBase)
         m5SRLineSetting['shortSymbol'] = 'SR'
         m5SRLineSetting['name'] = 'M5SR'
+        m5SRLineSetting['minDiff'] = 1
         m3SRLineSetting = copy.copy(m3LineSettingBase)
         m3SRLineSetting['shortSymbol'] = 'SR'
         m3SRLineSetting['name'] = 'M3SR'
+        m3SRLineSetting['minDiff'] = 1
 
         self.MARKET = {
             'RB': {'name': 'RB', 'm5Setting': m5RBLineSetting, 'm3Setting': m3RBLineSetting, 'varList': copy.copy(self.varList)},
@@ -209,10 +242,7 @@ class MainForceBreakStrategy(CtaTemplate):
     def onTick(self, tick):
         # print('*' * 20 + 'onTick start' + '*' * 20)
         # print('\n'.join(['%s:%s' % item for item in tick.__dict__.items()]))
-        # 计算K线
         if hasattr(tick, 'vtSymbol'):
-            # print('*' * 20 + 'onTick start' + '*' * 20)
-            # print('\n'.join(['%s:%s' % item for item in tick.__dict__.items()]))
             if tick.vtSymbol == 'rb1901':
                 self.lineM5RB.onTick(copy.copy(tick))
                 self.lineM3RB.onTick(copy.copy(tick))
@@ -254,195 +284,97 @@ class MainForceBreakStrategy(CtaTemplate):
         # 发出状态更新事件
         self.putEvent()
 
-    def onBarM5(self, m5Bar):
-        self.writeCtaCritical('*' * 20 + 'onBarM5 start' + '*' * 20)
-        # print('\n'.join(['%s:%s' % item for item in m5Bar.__dict__.items()]))
-        curSymbol = m5Bar.symbol[:-4].upper()
-        curVarList = self.MARKET[curSymbol]['varList']
+    def onBarM5(self, bar):
+        self.writeCtaLog('*' * 20 + 'onBarM5 start' + '*' * 20)
+        # print('\n'.join(['%s:%s' % item for item in bar.__dict__.items()]))
+        short_symbol = bar.symbol[:-4].upper()
+        var_list = self.MARKET[short_symbol]['varList']
 
-        if m5Bar.symbol == 'cu1901':
-            curVarList['m5PreHighArray'][0:4] = curVarList['m5PreHighArray'][1:5]
-            curVarList['m5PreLowArray'][0:4] = curVarList['m5PreLowArray'][1:5]
-            curVarList['m5PreHLChangeArray'][0:4] = curVarList['m5PreHLChangeArray'][1:5]
-            curVarList['m5PreHighArray'][-1] = m5Bar.high
-            curVarList['m5PreLowArray'][-1] = m5Bar.low
-            curVarList['m5PreHLChangeArray'][-1] = m5Bar.high - m5Bar.low
-            self.writeCtaCritical('high: %s' % m5Bar.high)
-            self.writeCtaCritical('low: %s' % m5Bar.low)
-            self.writeCtaCritical('m5PreHighArray: %s' % curVarList['m5PreHighArray'])
-            self.writeCtaCritical('m5PreLowArray: %s' % curVarList['m5PreLowArray'])
-            self.writeCtaCritical('m5PreHLChangeArray: %s' % curVarList['m5PreHLChangeArray'])
-        pass
-        if curVarList['fiveMinKCount'] <= curVarList['fiveMinK']:
-            self.writeCtaCritical(u'top 5 bars')
-            curVarList['fiveMinKCount'] += 1
-            if curVarList['m5HighValue'] == 0:
-                curVarList['m5HighValue'] = m5Bar.high
+        var_list['m5PreSwingArray'][0: var_list['bufferSize'] - 1] = \
+            var_list['m5PreSwingArray'][1: var_list['bufferSize']]
+        var_list['m5PreVolumeArray'][0: var_list['bufferSize'] - 1] = \
+            var_list['m5PreVolumeArray'][1: var_list['bufferSize']]
+        var_list['m5PreOpenInterestArray'][0: var_list['bufferSize'] - 1] = \
+            var_list['m5PreOpenInterestArray'][1: var_list['bufferSize']]
 
-            if curVarList['m5LowValue'] == 0:
-                curVarList['m5LowValue'] = m5Bar.low
+        var_list['m5PreSwingArray'][-1] = bar.high - bar.low
+        var_list['m5PreVolumeArray'][-1] = bar.volume
+        var_list['m5PreOpenInterestArray'][-1] = bar.openInterest
 
-            curVarList['m5HighValue'] = max(curVarList['m5HighValue'], m5Bar.high)
-            curVarList['m5LowValue'] = min(curVarList['m5LowValue'], m5Bar.low)
-            if curVarList['m5HighValue'] == m5Bar.high:
-                curVarList['m5HighOpenInterest'] = m5Bar.openInterest
-                curVarList['m5HighVolume'] = m5Bar.volume
-                curVarList['m5HighChange'] = abs(m5Bar.high - m5Bar.low)
+        if var_list['m5RecordedKline'] <= var_list['m5MaxRecordedKline']:
+            self.writeCtaLog(u'In top {} - {} bars'.format(var_list['m5MaxRecordedKline'], var_list['m5RecordedKline']))
+            var_list['m5RecordedKline'] += 1
+            var_list['m5HighValue'] = 0 if var_list['m5HighValue'] == 0 else bar.high
+            var_list['m5LowValue'] = 0 if var_list['m5LowValue'] == 0 else bar.low
+            var_list['m5HighValue'] = max(var_list['m5HighValue'], bar.high)
+            var_list['m5LowValue'] = min(var_list['m5LowValue'], bar.low)
 
-            if curVarList['m5LowValue'] == m5Bar.low:
-                curVarList['m5LowOpenInterest'] = m5Bar.openInterest
-                curVarList['m5LowChange'] = abs(m5Bar.high - m5Bar.low)
+            if var_list['m5HighValue'] == bar.high:
+                var_list['m5HighOpenInterest'] = bar.openInterest
+                var_list['m5HighVolume'] = bar.volume
+                var_list['m5HighSwing'] = bar.high - bar.low
 
-            if abs(curVarList['m5HighValue'] - curVarList['m5LowValue']) > m5Bar.close * 0.016:
-                curVarList['isBigChange'] = True
-            if m5Bar.close < m5Bar.open:
-                curVarList['isContinuousRise'] = False
+            if var_list['m5LowValue'] == bar.low:
+                var_list['m5LowOpenInterest'] = bar.openInterest
+                var_list['m5LowVolume'] = bar.volume
+                var_list['m5LowSwing'] = bar.high - bar.low
+
+            if var_list['m5HighValue'] - var_list['m5LowValue'] > bar.close * 0.016:
+                var_list['isBigSwing'] = True
+            if bar.close < bar.open:
+                var_list['isContinuousRise'] = False
             else:
-                curVarList['isContinuousFall'] = False
-            # for (k, v) in curVarList.items():
-            #     self.writeCtaCritical('%s: %s' % (k, v))
-            # for item in curVarList['m5PreChangeArray']:
-            #     self.writeCtaCritical('m5PreChangeArray: %s' % item)
+                var_list['isContinuousFall'] = False
 
-        if curVarList['fiveMinKCount'] >= 5:
-            self.writeCtaCritical(u'out of 5 bars')
-            curVarList['m5PreVolume'] = curVarList['m5CurVolume']
-            curVarList['m5CurVolume'] = m5Bar.volume
-            curVarList['m5PreOpenInterest'] = curVarList['m5CurOpenInterest']
-            curVarList['m5CurOpenInterest'] = m5Bar.openInterest
-            curVarList['m5PreChangeArray'][0:4] = curVarList['m5PreChangeArray'][1:5]
-            curVarList['m5PreChangeArray'][-1] = abs(m5Bar.high - m5Bar.low)
+        for (k, v) in var_list.items():
+            self.writeCtaLog('%s: %s' % (k, v))
+        for item in var_list['m5PreSwingArray']:
+            self.writeCtaLog('m5PreSwingArray: %s' % item)
 
-            self.MARKET[curSymbol]['varList'] = curVarList
-            # for (k, v) in curVarList.items():
-            #     self.writeCtaCritical('%s: %s' % (k, v))
-            # for item in curVarList['m5PreChangeArray']:
-            #     self.writeCtaCritical('m5PreChangeArray: %s' % item)
+        self.MARKET[short_symbol]['varList'] = var_list
 
-            self.writeCtaCritical(u'{0}: 当前价{1}, 前25分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.format(
-                m5Bar.symbol, m5Bar.close, curVarList['m5HighValue'], curVarList['m5HighVolume'], curVarList['m5HighOpenInterest'], m5Bar.volume, m5Bar.openInterest))
+        if var_list['m5RecordedKline'] >= 5:
+            self.writeCtaLog(u'out of {} bars'.format(var_list['m5MaxRecordedKline']))
+            self.writeCtaLog(u'{0}: 当前价{1}, 前25分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.format(
+                bar.symbol, bar.close, var_list['m5HighValue'], var_list['m5HighVolume'], var_list['m5HighOpenInterest'], bar.volume, bar.openInterest))
 
-            if curVarList['isContinuousRise']:
-                self.writeCtaCritical(u'前5根k线持续上涨不开仓')
+            if var_list['isContinuousRise']:
+                self.writeCtaLog(u'前5根k线持续上涨不开仓')
                 return
-            if curVarList['isContinuousRise']:
-                self.writeCtaCritical(u'前5根线持续下跌不开仓')
+            if var_list['isContinuousRise']:
+                self.writeCtaLog(u'前5根线持续下跌不开仓')
                 return
 
-            if curVarList['isBigChange']:
-                self.writeCtaCritical(u'前5根K线的高点和低点幅度适当，不能差距太大，如果差价太大，不能开仓，其中参考范围是振幅差距在1.6%以内')
+            if var_list['isBigSwing']:
+                self.writeCtaLog(u'前5根K线的高点和低点幅度适当，不能差距太大，如果差价太大，不能开仓，其中参考范围是振幅差距在1.6%以内')
                 return
 
-            changeSum = 0
-            if m5Bar.close > curVarList['m5HighValue'] and m5Bar.openInterest > curVarList['m5PreOpenInterest'] and m5Bar.openInterest > curVarList['m5HighOpenInterest'] * 0.5:
-                self.writeCtaCritical(u'价格突破前5根5分钟K线最高点,持仓量增加')
-                if m5Bar.volume > curVarList['m5HighValue'] * 0.7 or m5Bar.volume > curVarList['m5PreVolume']:
-                    self.writeCtaCritical(u'成交量增加，成交量高于前面K线成交量或者成交量是高点K线的70%以上')
-                    for item in curVarList['m5PreChangeArray']:
-                        changeSum = changeSum + item
-                    if abs(m5Bar.high - m5Bar.low) > (changeSum/5 * 1.2):
-                        self.writeCtaCritical(u'中阳线 这跟K线是近期震荡的几根K线的振幅的1.2倍以上')
-                        ddRobot = dingRobot()
-                        self.writeCtaCritical(u'send message')
-                        ddRobot.postStart(u'{0}可以开多仓, 当前价{1}, 前5分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.
-                                          format(m5Bar.symbol, m5Bar.close, curVarList['m5HighValue'], curVarList['m5HighVolume'], curVarList['m5HighOpenInterest'], m5Bar.volume, m5Bar.openInterest))
-
-            if m5Bar.close < curVarList['m5LowValue'] and m5Bar.openInterest > curVarList['m5PreOpenInterest'] and m5Bar.openInterest > curVarList['m5LowOpenInterest'] * 0.5:
-                self.writeCtaCritical(u'价格突破前5根5分钟K线最低点,持仓量减少')
-                if abs(m5Bar.high - m5Bar.low) > (changeSum / 5 * 1.2):
-                    self.writeCtaCritical(u'这跟K线是近期震荡的几根K线的振幅的1.2倍以上')
-                    ddRobot = dingRobot()
-                    self.writeCtaCritical(u'send message')
-                    ddRobot.postStart(u'{0}可以开空仓, 当前价{1}, 前5分钟最低价{2}， 最低价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.
-                                      format(m5Bar.symbol, m5Bar.close, curVarList['m5LowValue'], curVarList['m5LowVolume'], curVarList['m5LowOpenInterest'], m5Bar.volume, m5Bar.openInterest))
-
-    def onBarM3(self, m3Bar):
-        self.writeCtaCritical('*' * 20 + 'onBarM3 start' + '*' * 20)
-        pass
-        curSymbol = m3Bar.symbol[:-4].upper()
-        curVarList = self.MARKET[curSymbol]['varList']
-
-        if curVarList['threeMinKCount'] <= curVarList['threeMinK']:
-            self.writeCtaLog(u'top 9 bars')
-            curVarList['threeMinKCount'] += 1
-            if curVarList['m3HighValue'] == 0:
-                curVarList['m3HighValue'] = m3Bar.high
-
-            if curVarList['m3LowValue'] == 0:
-                curVarList['m3LowValue'] = m3Bar.low
-
-            curVarList['m3HighValue'] = max(curVarList['m3HighValue'], m3Bar.high)
-            curVarList['m3LowValue'] = min(curVarList['m3LowValue'], m3Bar.low)
-            if curVarList['m3HighValue'] == m3Bar.high:
-                curVarList['m3HighOpenInterest'] = m3Bar.openInterest
-                curVarList['m3HighVolume'] = m3Bar.volume
-                curVarList['m3HighChange'] = abs(m3Bar.high - m3Bar.low)
-
-            if curVarList['m3LowValue'] == m3Bar.low:
-                curVarList['m3LowOpenInterest'] = m3Bar.openInterest
-                curVarList['m3LowChange'] = abs(m3Bar.high - m3Bar.low)
-
-            if abs(curVarList['m3HighValue'] - curVarList['m3LowValue']) > m3Bar.close * 0.016:
-                curVarList['isBigChange'] = True
-            if m3Bar.close < m3Bar.open:
-                curVarList['isContinuousRise'] = False
-            else:
-                curVarList['isContinuousFall'] = False
-
-        if curVarList['fiveMinKCount'] >= 9:
-            self.writeCtaLog(u'out of 9 bars')
-            curVarList['m3PreVolume'] = curVarList['m3CurVolume']
-            curVarList['m3CurVolume'] = m3Bar.volume
-            curVarList['m3PreOpenInterest'] = curVarList['m3CurOpenInterest']
-            curVarList['m3CurOpenInterest'] = m3Bar.openInterest
-            curVarList['m3PreChangeArray'][0:4] = curVarList['m3PreChangeArray'][1:5]
-            curVarList['m3PreChangeArray'][-1] = abs(m3Bar.high - m3Bar.low)
-
-            self.MARKET[curSymbol]['varList'] = curVarList
-
-            self.writeCtaCritical(u'{0}: 当前价{1}, 前27分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.format(
-                m3Bar.symbol, m3Bar.close, curVarList['m3HighValue'], curVarList['m3HighVolume'],
-                curVarList['m3HighOpenInterest'], m3Bar.volume, m3Bar.openInterest))
-
-            if curVarList['isContinuousRise']:
-                self.writeCtaLog(u'前9根k线持续上涨不开仓')
-                return
-            if curVarList['isContinuousRise']:
-                self.writeCtaLog(u'前9根线持续下跌不开仓')
-                return
-
-            if curVarList['isBigChange']:
-                self.writeCtaLog(u'前9根K线的高点和低点幅度适当，不能差距太大，如果差价太大，不能开仓，其中参考范围是振幅差距在1.6%以内')
-                return
-
-            changeSum = 0
-            if m3Bar.close > curVarList['m3HighValue'] and (
-                    m3Bar.openInterest > curVarList['m3HighOpenInterest'] or m3Bar.openInterest > curVarList['m3PreOpenInterest']):
-                self.writeCtaLog(u'价格突破前9根3分钟K线最高点,持仓量增加')
-                if m3Bar.volume > curVarList['m3HighValue'] * 0.7 or m3Bar.volume > curVarList['m3PreVolume']:
+            SwingSum = 0
+            if bar.close > var_list['m5HighValue'] and bar.openInterest > var_list['m5PreOpenInterestArray'][-2] and bar.openInterest > var_list['m5HighOpenInterest'] * 0.5:
+                self.writeCtaLog(u'价格突破前5根5分钟K线最高点,持仓量增加')
+                if bar.volume > var_list['m5HighValue'] * 0.7 or bar.volume > var_list['m5PreVolumeArray'][-2]:
                     self.writeCtaLog(u'成交量增加，成交量高于前面K线成交量或者成交量是高点K线的70%以上')
-                    for item in curVarList['m3PreChangeArray']:
-                        changeSum = changeSum + item
-                    if abs(m3Bar.high - m3Bar.low) > (changeSum / 9 * 1.2):
+                    for item in var_list['m5PreSwingArray']:
+                        SwingSum = SwingSum + item
+                    if abs(bar.high - bar.low) > (SwingSum/10 * 1.2):
                         self.writeCtaLog(u'中阳线 这跟K线是近期震荡的几根K线的振幅的1.2倍以上')
                         ddRobot = dingRobot()
                         self.writeCtaLog(u'send message')
                         ddRobot.postStart(u'{0}可以开多仓, 当前价{1}, 前5分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.
-                                          format(m3Bar.symbol, m3Bar.close, curVarList['m3HighValue'],
-                                                 curVarList['m3HighVolume'], curVarList['m3HighOpenInterest'],
-                                                 m3Bar.volume, m3Bar.openInterest))
+                                          format(bar.symbol, bar.close, var_list['m5HighValue'], var_list['m5HighVolume'], var_list['m5HighOpenInterest'], bar.volume, bar.openInterest))
 
-            if m3Bar.close < curVarList['m3LowValue'] and (
-                    m3Bar.openInterest < curVarList['m3LowOpenInterest'] or m3Bar.openInterest < curVarList['m3PreOpenInterest']):
+            if bar.close < var_list['m5LowValue'] and bar.openInterest > var_list['m5PreOpenInterestArray'][-2] and bar.openInterest > var_list['m5LowOpenInterest'] * 0.5:
                 self.writeCtaLog(u'价格突破前5根5分钟K线最低点,持仓量减少')
-                if abs(m3Bar.high - m3Bar.low) < (changeSum / 9 * 1.2):
-                    self.writeCtaLog(u'这跟K线是近期震荡的几根K线的振幅的1.2倍以下')
+                if abs(bar.high - bar.low) > (SwingSum / 5 * 1.2):
+                    self.writeCtaLog(u'这跟K线是近期震荡的几根K线的振幅的1.2倍以上')
                     ddRobot = dingRobot()
-                    self.writeCtaLog(u'+--- send message')
-                    ddRobot.postStart(u'{0}可以开空仓, 当前价{1}, 前5分钟最高价{2}， 最高价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.
-                                      format(m3Bar.symbol, m3Bar.close, curVarList['m3HighValue'],
-                                             curVarList['m3HighVolume'], curVarList['m3HighOpenInterest'], m3Bar.volume,
-                                             m3Bar.openInterest))
+                    self.writeCtaLog(u'send message')
+                    ddRobot.postStart(u'{0}可以开空仓, 当前价{1}, 前5分钟最低价{2}， 最低价时成交量{3}， 最高价时持仓量{4}， 当前成交量{5}， 当前持仓量{6}。'.
+                                      format(bar.symbol, bar.close, var_list['m5LowValue'], var_list['m5LowVolume'], var_list['m5LowOpenInterest'], bar.volume, bar.openInterest))
+
+    def onBarM3(self, bar):
+        self.writeCtaLog('*' * 20 + 'onBarM3 start' + '*' * 20)
+        pass
 
     def onOrder(self, order):
         """收到委托变化推送（必须由用户继承实现）"""
