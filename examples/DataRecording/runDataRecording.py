@@ -7,10 +7,10 @@ from datetime import datetime, time
 
 from vnpy.event import EventEngine2
 from vnpy.trader.vtEvent import EVENT_LOG, EVENT_ERROR
-from vnpy.trader.vtEngine import MainEngine, LogEngine
+from vnpy.trader.vtEngine import MainEngine
 from vnpy.trader.gateway import ctpGateway
 from vnpy.trader.app import dataRecorder
-
+from vnpy.trader.setup_logger import setup_logger
 
 #----------------------------------------------------------------------
 def processErrorEvent(event):
@@ -27,7 +27,7 @@ def runChildProcess():
     print('-'*20)
 
     # 创建日志引擎
-    le = LogEngine()
+    le = setup_logger(filename='logs/vnpy.log', debug=False)
     le.setLogLevel(le.LEVEL_INFO)
     le.addConsoleHandler()
     le.info(u'启动行情记录运行子进程')
@@ -54,9 +54,7 @@ def runChildProcess():
 def runParentProcess():
     """父进程运行函数"""
     # 创建日志引擎
-    le = LogEngine()
-    le.setLogLevel(le.LEVEL_INFO)
-    le.addConsoleHandler()
+    le = setup_logger(filename='logs/vnpy.log', debug=False)
     le.info(u'启动行情记录守护父进程')
     
     DAY_START = time(8, 57)         # 日盘启动和停止时间
