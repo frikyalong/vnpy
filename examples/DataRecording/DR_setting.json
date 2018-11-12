@@ -1,0 +1,22 @@
+{
+    "working": true,
+	"marketCloseTime": "15:05:00",
+
+    "tick":
+    [
+        ["rb1901", "CTP"],
+        ["m1901", "CTP"],
+    ],
+
+    "bar":
+    [
+        ["rb1901", "CTP"],
+        ["m1901", "CTP"],
+    ],
+
+    "active":
+    {
+        "rb.HOT": "rb1901",
+        "m.HOT": "m1901",
+    }
+}
