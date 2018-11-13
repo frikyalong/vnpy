@@ -28,8 +28,8 @@ def runChildProcess():
 
     # 创建日志引擎
     le = setup_logger(filename='logs/vnpy.log', debug=False)
-    le.setLogLevel(le.LEVEL_INFO)
-    le.addConsoleHandler()
+    # le.setLogLevel(le.LEVEL_INFO)
+    # le.addConsoleHandler()
     le.info(u'启动行情记录运行子进程')
     
     ee = EventEngine2()

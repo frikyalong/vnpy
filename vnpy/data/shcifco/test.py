@@ -2,14 +2,14 @@
 
 from __future__ import print_function
 from __future__ import absolute_import
-from .vnshcifco import ShcifcoApi, PERIOD_1MIN
+from vnpy.data.shcifco.vnshcifco import ShcifcoApi, PERIOD_1MIN
 
 
 if __name__ == "__main__":
-    ip = '180.169.126.123'
-    port  = '45065'
-    token = '请联系上海中期申请'
-    symbol = 'cu1709'
+    ip = 'dsdx.shcifco.com'
+    port  = '10083'
+    token = '50404935ba9cb370de2ac22474966163'
+    symbol = 'cu'
     
     # 创建API对象
     api = ShcifcoApi(ip, port, token)
