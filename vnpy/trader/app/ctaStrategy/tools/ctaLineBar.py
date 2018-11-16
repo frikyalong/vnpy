@@ -77,7 +77,7 @@ class CtaLineBar(object):
         self.inputEma2Len = EMPTY_INT   # 21
 
         self.inputDmiLen = EMPTY_INT    # 14           # DMI的计算周期
-        self.inputDmiMax = EMPTY_FLOAT  # 30           # Dpi和Mdi的突破阈值
+        self.inputDmiMax = EMPTY_FLOAT  # 30           # Dp i和Mdi的突破阈值
 
         self.inputAtr1Len = EMPTY_INT   # 10           # ATR波动率的计算周期(近端）
         self.inputAtr2Len = EMPTY_INT   # 26           # ATR波动率的计算周期（常用）

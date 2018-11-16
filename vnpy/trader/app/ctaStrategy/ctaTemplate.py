@@ -224,7 +224,7 @@ class CtaTemplate(object):
         """向数据库中插入tick数据"""
         self.ctaEngine.insertData(self.tickDbName, self.vtSymbol, tick)
     
-    #----------------------------------------------------------------------
+    #---------------------------------------------------- ------------------
     def insertBar(self, bar):
         """向数据库中插入bar数据"""
         self.ctaEngine.insertData(self.barDbName, self.vtSymbol, bar)
