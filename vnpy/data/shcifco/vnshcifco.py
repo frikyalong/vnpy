@@ -53,15 +53,16 @@ class ShcifcoApi(object):
         data = data.split(';')[0]
         l = data.split(',')
         d = {
-            'symbol': l[0],
-            'lastPrice': float(l[1]),
-            'bidPrice': float(l[2]),
-            'bidVolume': int(l[3]),
-            'askPrice': float(l[4]),
-            'askVolume': int(l[5]),
-            'volume': int(l[6]),
-            'openInterest': int(float(l[7]))
+            'symbol': l[1],
+            'lastPrice': float(l[4]),
+            'bidPrice': float(l[22]),
+            'bidVolume': int(l[23]),
+            'askPrice': float(l[24]),
+            'askVolume': int(l[25]),
+            'volume': int(l[11]),
+            'openInterest': int(float(l[13]))
         }
+        print(d)
         return d
     
     #----------------------------------------------------------------------
@@ -134,6 +135,8 @@ class ShcifcoApi(object):
             d = {
                 'symbol': barData[0],
                 # 'date': barData[1],   # trading day
+                'tradingday': barData[1],
+                'minute': barData[2],
                 'time': barData[2],
                 'open': float(barData[3]),
                 'high': float(barData[4]),
@@ -143,6 +146,7 @@ class ShcifcoApi(object):
                 'openInterest': int(float(barData[8])),
                 'date': barData[9]  # natural day
             }
+            print(d)
             barList.append(d)
             
         return barList
