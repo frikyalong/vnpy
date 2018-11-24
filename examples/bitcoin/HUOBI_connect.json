@@ -1,0 +1,10 @@
+{
+	"exchange": "huobi",
+	"accessKey": "dxx",
+	"secretKey": "xxx0",
+	"symbols": ["btcusdt"],
+	"auto_subscribe":["btcusdt"],
+	"proxyHost": "",
+	"proxyPort": 0,
+	"trace": true
+}

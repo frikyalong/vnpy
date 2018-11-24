@@ -1,0 +1,8 @@
+{
+	"accountID": "vnpy_gate",
+    "accessKey": "xxx",
+    "secretKey": "8xxx",
+    "interval": 6,
+    "log_message": true,
+    "auto_subscribe":["btc_usdt"]
+}

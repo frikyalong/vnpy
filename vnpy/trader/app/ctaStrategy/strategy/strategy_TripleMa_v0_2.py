@@ -8,13 +8,13 @@ from time import sleep
 # 其次，导入vnpy的基础模块
 import sys
 sys.path.append('..')
-from vtConstant import EMPTY_STRING, EMPTY_INT, DIRECTION_LONG, DIRECTION_SHORT, OFFSET_OPEN, STATUS_CANCELLED
+from vnpy.trader.vtConstant import EMPTY_STRING, EMPTY_INT, DIRECTION_LONG, DIRECTION_SHORT, OFFSET_OPEN, STATUS_CANCELLED
 
 # 然后是自己编写的模块
-from ctaTemplate import *
-from ctaBase import *
-from ctaLineBar import *
-from utilSinaClient import UtilSinaClient
+from vnpy.trader.app.ctaStrategy.ctaTemplate import *
+from vnpy.trader.app.ctaStrategy.ctaBase import *
+from vnpy.trader.app.ctaStrategy.ctaLineBar import *
+from vnpy.trader.app.ctaStrategy.utilSinaClient import UtilSinaClient
 
 class Strategy_TripleMa(CtaTemplate):
     """螺纹钢、5分钟级别、三均线策略
