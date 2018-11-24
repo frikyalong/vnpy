@@ -238,12 +238,10 @@ class MainForceBreakStrategy(CtaTemplate):
         symbol = 'cu1901'
         # 创建API对象
         api = ShcifcoApi(ip, port, token)
-        bars = api.loadMA40InitData('cu1901')
-        print(bars)
-        if self.dbClient:
-            db = self.dbClient['vnpy_test']
-            collection = db['MA40']
-            collection.insertMany(bars)
+        api.loadMA40InitData('cu1901', self.saveMA40Data)
+
+    def saveMA40Data(self, bars):
+        self.ctaEngine.mainEngine.dbInsertMany('vnpy', 'MA40', bars)
 
     def onStart(self):
         self.writeCtaLog(u'%s策略启动' % self.name)

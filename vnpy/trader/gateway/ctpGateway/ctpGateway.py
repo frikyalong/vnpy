@@ -159,8 +159,6 @@ class CtpGateway(VtGateway):
         self.writeLog(u'连接交易服务器')
         self.writeLog(u'userID')
         self.writeLog(userID)
-        self.writeLog(u'password')
-        self.writeLog(password)
         self.writeLog(u'tdAddress')
         self.writeLog(tdAddress)
         self.tdApi.connect(userID, password, brokerID, tdAddress, authCode, userProductInfo)

@@ -11,24 +11,4 @@
           "klineType1EndTime": "21:27",
           "endTime": "14:30"
       }
-//        {
-//        "backtesting": false,
-//        "minDiff": 0.01,
-//        "name": "BTC_USDT_RBreaker",
-//        "shortSymbol": "btc_usdt",
-//        "inputSS": 0.01,
-//        "className": "StrategyDemo_RBreaker",
-//        "vtSymbol": "btc_usdt.OKEX",
-//        "mode": "tick",
-//        "auto_init": true,
-//        "auto_start": true,
-//        "kline_name":"H12",
-//        "kline_period":"hour",
-//        "kline_len":12,
-//        "long_mult":0.8,
-//        "short_mult":0.8,
-//        "max_trade_volume":2,
-//        "min_trade_volume":0.001,
-//        "min_notional":10
-//    }
 ]

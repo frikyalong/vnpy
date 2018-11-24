@@ -153,6 +153,7 @@ class ShcifcoApi(object):
             
         return barList
 
-    def loadMA40InitData(self, symbol):
+    def loadMA40InitData(self, symbol, callback):
         bars = self.getHisBar(symbol, 200, period='15m')
+        callback(bars)
 
