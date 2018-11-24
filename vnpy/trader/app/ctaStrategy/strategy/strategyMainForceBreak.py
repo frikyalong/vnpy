@@ -3,6 +3,7 @@ from vnpy.trader.app.ctaStrategy.strategy.dingTalkSend import dingRobot
 from vnpy.trader.app.ctaStrategy.ctaLineBar import *
 from vnpy.trader.app.ctaStrategy.ctaBase import *
 from vnpy.trader.app.ctaStrategy.ctaTemplate import CtaTemplate
+from vnpy.data.shcifco.vnshcifco import ShcifcoApi
 
 
 class MainForceBreakStrategy(CtaTemplate):
@@ -230,6 +231,19 @@ class MainForceBreakStrategy(CtaTemplate):
     def onInit(self):
         self.writeCtaLog(u'%s策略初始化' % self.name)
         self.putEvent()
+        ip = 'dsdx.shcifco.com'
+        port = '10083'
+        token = '50404935ba9cb370de2ac22474966163'
+        # symbol = 'rb1901,ru1901,m1901,i1901,cu1901,ni1901,hc1901,y1901,jm1901,cf1901,zn1901,sr1901'
+        symbol = 'cu1901'
+        # 创建API对象
+        api = ShcifcoApi(ip, port, token)
+        bars = api.loadMA40InitData('cu1901')
+        print(bars)
+        if self.dbClient:
+            db = self.dbClient['vnpy_test']
+            collection = db['MA40']
+            collection.insertMany(bars)
 
     def onStart(self):
         self.writeCtaLog(u'%s策略启动' % self.name)

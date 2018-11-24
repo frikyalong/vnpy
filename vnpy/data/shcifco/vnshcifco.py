@@ -2,6 +2,8 @@
 
 
 from __future__ import print_function
+
+from pymongo import MongoClient
 import requests
 
 HTTP_OK = 200
@@ -150,4 +152,7 @@ class ShcifcoApi(object):
             barList.append(d)
             
         return barList
+
+    def loadMA40InitData(self, symbol):
+        bars = self.getHisBar(symbol, 200, period='15m')
 
