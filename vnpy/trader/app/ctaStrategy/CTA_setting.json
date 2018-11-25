@@ -1,7 +1,7 @@
 [
         {
                 "name": "G01_LBreaker_RB",
-                "className": "LBreaker",
+                "className": "StrategyLBreaker",
                 "vtSymbol": "rb1901",
                 "symbol": "rb1901",
                 "shortSymbol": "RB",
