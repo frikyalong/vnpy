@@ -122,7 +122,7 @@ class StrategyLBreaker(CtaTemplate):
     def __initDataFromSina(self):
         """从sina初始化5分钟数据"""
         sina = UtilSinaClient(self)
-        ret = sina.getMinBars(symbol=self.symbol, minute=60, callback=self.lineH1.addBar)
+        ret = sina.getMinBars(symbol=self.symbol, minute=15, callback=self.lineH1.addBar)
         if not ret:
             self.writeCtaLog(u'获取M5数据失败')
             return False
