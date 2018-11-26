@@ -8,8 +8,8 @@ from vnpy.trader.app.ctaStrategy.ctaPosition import *
 from vnpy.trader.app.ctaStrategy.ctaTemplate import *
 from vnpy.trader.app.ctaStrategy.ctaBase import *
 from vnpy.trader.app.ctaStrategy.ctaLineBar import *
-from vnpy.trader.util_sina import UtilSinaClient
 from vnpy.trader.app.ctaStrategy.strategy.dingTalkSend import dingRobot
+from vnpy.data.shcifco.vnshcifco import *
 
 
 class StrategyLBreaker(CtaTemplate):
@@ -112,17 +112,20 @@ class StrategyLBreaker(CtaTemplate):
 
         if not self.backtesting:
             # 这里需要加载前置数据哦。
-            if not self.__initDataFromSina():
+            if not self.__initDataFromShcifo():
                 self.inited = True                   # 更新初始化标识
                 self.trading = True                  # 启动交易
 
         self.putEvent()
         self.writeCtaLog(u'策略初始化完成')
 
-    def __initDataFromSina(self):
+    def __initDataFromShcifo(self):
         """从sina初始化5分钟数据"""
-        sina = UtilSinaClient(self)
-        ret = sina.getMinBars(symbol=self.symbol, minute=15, callback=self.lineH1.addBar)
+        ip = 'dsdx.shcifco.com'
+        port = '10083'
+        token = '50404935ba9cb370de2ac22474966163'
+        api = ShcifcoApi(ip, port, token)
+        ret = api.getMinBars(self.symbol, self.lineH1.addBar)
         if not ret:
             self.writeCtaLog(u'获取M5数据失败')
             return False

@@ -5,6 +5,7 @@ from __future__ import print_function
 
 from pymongo import MongoClient
 import requests
+from vnpy.trader.app.ctaStrategy.ctaBase import CtaBarData
 
 HTTP_OK = 200
 
@@ -156,4 +157,36 @@ class ShcifcoApi(object):
     def loadMA40InitData(self, symbol, callback):
         bars = self.getHisBar(symbol, 200, period='15m')
         callback(bars)
+
+    def getMinBars(self, symbol, callback):
+        bars = []
+        try:
+            responses = self.getHisBar(symbol, 200, period='15m')
+
+            for item in responses:
+                bar = CtaBarData()
+
+                bar.vtSymbol = symbol
+                bar.symbol = symbol
+                bar.time = item.time
+                bar.open = item.open
+                bar.high = item.high
+                bar.low = item.low
+                bar.close = item.close
+                bar.volume = item.volume
+
+                bars.append(bar)
+
+            if len(bars) > 0:
+                for bar in bars:
+                    callback(bar)
+                bars = []
+                return True
+            else:
+                self.strategy.writeCtaLog(u'从shcifo读取分钟数据失败')
+                return False
+
+        except Exception as e:
+            self.strategy.writeCtaLog(u'加载shcifo历史分钟数据失败：'+str(e))
+            return False
 
