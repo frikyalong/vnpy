@@ -14,6 +14,7 @@ from vnpy.trader.app.ctaStrategy.strategy.dingTalkSend import dingRobot
 
 class StrategyLBreaker(CtaTemplate):
     className = 'StrategyLBreaker'
+    author = u'Gary'
 
     inputSS = 1                # 参数SS，下单，范围是1~100，步长为1，默认=1，
     minDiff = 1                # 商品的最小交易单位
@@ -29,8 +30,8 @@ class StrategyLBreaker(CtaTemplate):
         # 增加监控变量项目
         self.varList.append('pos')  # 仓位
         self.varList.append('entrust')  # 是否正在委托
-        self.varList.append('globalPreHigh')  # 前高
-        self.varList.append('globalPreLow')  # 前低
+        # self.varList.append('globalPreHigh')  # 前高
+        # self.varList.append('globalPreLow')  # 前低
 
         self.curDateTime = None  # 当前Tick时间
         self.curTick = None  # 最新的tick
@@ -58,7 +59,6 @@ class StrategyLBreaker(CtaTemplate):
 
         # 增加仓位管理模块
         self.position = CtaPosition(self)
-        self.position.maxPos = self.maxPos
 
         if setting:
             # 根据配置文件更新参数
@@ -79,7 +79,7 @@ class StrategyLBreaker(CtaTemplate):
             lineH1Setting['period'] = 'hour'
             lineH1Setting['barTimeInterval'] = 1  # K线的Bar时长
             lineH1Setting['mode'] = CtaLineBar.BAR_MODE
-            lineH1Setting['inputMa1Len'] = 40  # 第1条均线
+            lineH1Setting['inputMa1Len'] = 30  # 第1条均线
             lineH1Setting['minDiff'] = self.minDiff
             lineH1Setting['shortSymbol'] = self.shortSymbol
             self.lineH1 = CtaLineBar(self, self.onBarH1, lineH1Setting)
@@ -178,6 +178,7 @@ class StrategyLBreaker(CtaTemplate):
         self.lineH1.onTick(tick)
 
         # 首先检查是否是实盘运行还是数据预处理阶段
+        self.writeCtaLog('*' * 20 + '首先检查是否是实盘运行还是数据预处理阶段' + '*' * 20)
         if not (self.inited and len(self.lineH1.lineMa1) > 0):
             return
 
@@ -207,7 +208,7 @@ class StrategyLBreaker(CtaTemplate):
         # 4、交易逻辑
         # 首先检查是否是实盘运行还是数据预处理阶段
         if not self.inited:
-            if len(self.lineH1.lineBar) > 40 + 1:
+            if len(self.lineH1.lineBar) > 40 + 2:
                 self.inited = True
             else:
                 return
@@ -236,6 +237,7 @@ class StrategyLBreaker(CtaTemplate):
 
         # 如果未持仓，检查是否符合开仓逻辑
         if self.tradeWindow and self.position.pos == 0:
+            self.writeCtaLog('*' * 20 + 'tradeWindow start' + '*' * 20)
             open_point = EMPTY_INT
             lose_point = EMPTY_INT
             win_point1 = EMPTY_INT
@@ -271,6 +273,20 @@ class StrategyLBreaker(CtaTemplate):
                             message = u'{0}可以开多仓, 当前价{1}, 开仓点{2}， 第一止盈点{3}, 止损点{4}'.\
                                 format(bar.symbol, bar.close, open_point, win_point1, lose_point)
                             ddRobot.postStart(message)
+
+    def onBarH1(self, bar):
+        """  分钟K线数据更新，实盘时，由self.lineH1的回调"""
+        # self.writeCtaLog('*' * 20 + 'onBarM5 start' + '*' * 20)
+        # self.writeCtaLog(self.lineH1.displayLastBar())
+        # 未初始化完成
+        if not self.inited:
+            if len(self.lineH1.lineBar) > 40 + 2:
+                self.inited = True
+            else:
+                return
+        else:
+            self.writeCtaLog(u'MA40:{0}'.format(self.lineH1.lineMa1[-1]))
+
 
     def __timeWindow(self, dt):
         """交易与平仓窗口"""
