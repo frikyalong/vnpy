@@ -6,7 +6,42 @@
                 "symbol": "rb1901",
                 "shortSymbol": "RB",
                 "inputSS": 1,
-                "minDiff": 1,
-                "mode": "bar"
+                "minDiff": 1
+        },
+        {
+                "name": "G01_LBreaker_CU",
+                "className": "StrategyLBreaker",
+                "vtSymbol": "cu1901",
+                "symbol": "cu1901",
+                "shortSymbol": "CU",
+                "inputSS": 1,
+                "minDiff": 10
+        },
+        {
+                "name": "G01_LBreaker_NI",
+                "className": "StrategyLBreaker",
+                "vtSymbol": "ni1901",
+                "symbol": "ni1901",
+                "shortSymbol": "NI",
+                "inputSS": 1,
+                "minDiff": 10
+        },
+        {
+                "name": "G01_LBreaker_JM",
+                "className": "StrategyLBreaker",
+                "vtSymbol": "jm1901",
+                "symbol": "jm1901",
+                "shortSymbol": "JM",
+                "inputSS": 1,
+                "minDiff": 0.5
+        },
+        {
+                "name": "G01_LBreaker_RU",
+                "className": "StrategyLBreaker",
+                "vtSymbol": "ru1901",
+                "symbol": "ru1901",
+                "shortSymbol": "RU",
+                "inputSS": 1,
+                "minDiff": 5
         }
 ]

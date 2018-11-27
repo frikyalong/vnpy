@@ -30,8 +30,8 @@ class StrategyLBreaker(CtaTemplate):
         # 增加监控变量项目
         self.varList.append('pos')  # 仓位
         self.varList.append('entrust')  # 是否正在委托
-        # self.varList.append('globalPreHigh')  # 前高
-        # self.varList.append('globalPreLow')  # 前低
+        self.varList.append('globalPreHigh')  # 前高
+        self.varList.append('globalPreLow')  # 前低
 
         self.curDateTime = None  # 当前Tick时间
         self.curTick = None  # 最新的tick
@@ -70,19 +70,30 @@ class StrategyLBreaker(CtaTemplate):
             lineM5Setting['barTimeInterval'] = 60 * 5  # K线的Bar时长
             lineM5Setting['minDiff'] = self.minDiff
             lineM5Setting['shortSymbol'] = self.shortSymbol
+            lineM5Setting['inputMa1Len'] = 40  # 第1条均线
             lineM5Setting['inputPreLen'] = 3   # 前高/前低
             self.lineM5 = CtaLineBar(self, self.onBarM5, lineM5Setting)
 
             # 创建的H1 K线
-            lineH1Setting = {}
-            lineH1Setting['name'] = u'H1'  # k线名称
-            lineH1Setting['period'] = 'hour'
-            lineH1Setting['barTimeInterval'] = 1  # K线的Bar时长
-            lineH1Setting['mode'] = CtaLineBar.BAR_MODE
-            lineH1Setting['inputMa1Len'] = 30  # 第1条均线
-            lineH1Setting['minDiff'] = self.minDiff
-            lineH1Setting['shortSymbol'] = self.shortSymbol
-            self.lineH1 = CtaLineBar(self, self.onBarH1, lineH1Setting)
+            # lineH1Setting = {}
+            # lineH1Setting['name'] = u'H1'  # k线名称
+            # lineH1Setting['period'] = 'hour'
+            # lineH1Setting['barTimeInterval'] = 1  # K线的Bar时长
+            # lineH1Setting['inputMa1Len'] = 40  # 第1条均线
+            # lineH1Setting['minDiff'] = self.minDiff
+            # lineH1Setting['shortSymbol'] = self.shortSymbol
+            # self.lineH1 = CtaLineBar(self, self.onBarH1, lineH1Setting)
+
+            lineH2Setting = {}
+            lineH2Setting['name'] = u'H1'
+            lineH2Setting['period'] = 'hour'
+            lineH2Setting['barTimeInterval'] = 1
+            lineH2Setting['inputPreLen'] = 5
+            lineH2Setting['inputMa1Len'] = 40
+            lineH2Setting['mode'] = CtaLineBar.TICK_MODE
+            lineH2Setting['minDiff'] = self.minDiff
+            lineH2Setting['shortSymbol'] = self.shortSymbol
+            self.lineH1 = CtaHourBar(self, self.onBarH1, lineH2Setting)
 
             try:
                 mode = setting['mode']
@@ -126,6 +137,7 @@ class StrategyLBreaker(CtaTemplate):
         token = '50404935ba9cb370de2ac22474966163'
         api = ShcifcoApi(ip, port, token)
         ret = api.getMinBars(self.symbol, self.lineH1.addBar)
+        # ret = api.getMinBars(self.symbol, self.lineM5.addBar)
         if not ret:
             self.writeCtaLog(u'获取M5数据失败')
             return False
@@ -181,7 +193,6 @@ class StrategyLBreaker(CtaTemplate):
         self.lineH1.onTick(tick)
 
         # 首先检查是否是实盘运行还是数据预处理阶段
-        self.writeCtaLog('*' * 20 + '首先检查是否是实盘运行还是数据预处理阶段' + '*' * 20)
         if not (self.inited and len(self.lineH1.lineMa1) > 0):
             return
 
@@ -220,6 +231,8 @@ class StrategyLBreaker(CtaTemplate):
         """  分钟K线数据更新，实盘时，由self.lineM5的回调"""
 
         # 未初始化完成
+        # self.writeCtaLog('*' * 20 + 'onBarM5 start' + '*' * 20)
+        # self.writeCtaLog(self.lineM5.displayLastBar())
         if not self.inited:
             return
 
@@ -279,16 +292,10 @@ class StrategyLBreaker(CtaTemplate):
 
     def onBarH1(self, bar):
         """  分钟K线数据更新，实盘时，由self.lineH1的回调"""
-        # self.writeCtaLog('*' * 20 + 'onBarM5 start' + '*' * 20)
-        # self.writeCtaLog(self.lineH1.displayLastBar())
+        self.writeCtaLog('*' * 20 + 'onBarH1 start' + '*' * 20)
+        self.writeCtaLog(self.lineH1.displayLastBar())
         # 未初始化完成
-        if not self.inited:
-            if len(self.lineH1.lineBar) > 40 + 2:
-                self.inited = True
-            else:
-                return
-        else:
-            self.writeCtaLog(u'MA40:{0}'.format(self.lineH1.lineMa1[-1]))
+        # self.writeCtaLog(u'MA40:{0}'.format(self.lineH1.lineMa1[-1]))
 
 
     def __timeWindow(self, dt):
