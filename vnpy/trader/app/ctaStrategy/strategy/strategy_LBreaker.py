@@ -19,6 +19,7 @@ class StrategyLBreaker(CtaTemplate):
     inputSS = 1                # 参数SS，下单，范围是1~100，步长为1，默认=1，
     minDiff = 1                # 商品的最小交易单位
     maLength = 40              # 平均波动周期 MA Length
+    maxPos = 4
 
     def __init__(self, ctaEngine, setting=None):
         super(StrategyLBreaker, self).__init__(ctaEngine, setting)
@@ -30,6 +31,7 @@ class StrategyLBreaker(CtaTemplate):
         # 增加监控变量项目
         self.varList.append('pos')  # 仓位
         self.varList.append('entrust')  # 是否正在委托
+        self.varList.append('ma40')  # MA40
         self.varList.append('globalPreHigh')  # 前高
         self.varList.append('globalPreLow')  # 前低
 
@@ -50,7 +52,6 @@ class StrategyLBreaker(CtaTemplate):
 
         # 创建一个策略规则
         self.policy = CtaPolicy()
-        self.atr = 10  # 平均波动
         self.policy.addPos = True  # 是否激活加仓策略
         self.policy.addPosOnPips = 1  # 加仓策略1，固定点数（动态ATR）
 
@@ -59,48 +60,32 @@ class StrategyLBreaker(CtaTemplate):
 
         # 增加仓位管理模块
         self.position = CtaPosition(self)
+        self.position.maxPos = self.maxPos
 
         if setting:
-            # 根据配置文件更新参数
             self.setParam(setting)
 
-            # 创建的M5 K线
             lineM5Setting = {}
-            lineM5Setting['name'] = u'M5'  # k线名称
-            lineM5Setting['barTimeInterval'] = 60 * 5  # K线的Bar时长
+            lineM5Setting['name'] = u'M5'
+            lineM5Setting['barTimeInterval'] = 60 * 5
             lineM5Setting['minDiff'] = self.minDiff
             lineM5Setting['shortSymbol'] = self.shortSymbol
-            lineM5Setting['inputMa1Len'] = 40  # 第1条均线
-            lineM5Setting['inputPreLen'] = 3   # 前高/前低
+            lineM5Setting['inputPreLen'] = 5
+            lineM5Setting['mode'] = CtaLineBar.TICK_MODE
+            lineM5Setting['minDiff'] = self.minDiff
+            lineM5Setting['shortSymbol'] = self.shortSymbol
             self.lineM5 = CtaLineBar(self, self.onBarM5, lineM5Setting)
 
-            # 创建的H1 K线
-            # lineH1Setting = {}
-            # lineH1Setting['name'] = u'H1'  # k线名称
-            # lineH1Setting['period'] = 'hour'
-            # lineH1Setting['barTimeInterval'] = 1  # K线的Bar时长
-            # lineH1Setting['inputMa1Len'] = 40  # 第1条均线
-            # lineH1Setting['minDiff'] = self.minDiff
-            # lineH1Setting['shortSymbol'] = self.shortSymbol
-            # self.lineH1 = CtaLineBar(self, self.onBarH1, lineH1Setting)
-
-            lineH2Setting = {}
-            lineH2Setting['name'] = u'H1'
-            lineH2Setting['period'] = 'hour'
-            lineH2Setting['barTimeInterval'] = 1
-            lineH2Setting['inputPreLen'] = 5
-            lineH2Setting['inputMa1Len'] = 40
-            lineH2Setting['mode'] = CtaLineBar.TICK_MODE
-            lineH2Setting['minDiff'] = self.minDiff
-            lineH2Setting['shortSymbol'] = self.shortSymbol
-            self.lineH1 = CtaHourBar(self, self.onBarH1, lineH2Setting)
-
-            try:
-                mode = setting['mode']
-                if mode != EMPTY_STRING:
-                    self.lineH1.setMode(setting['mode'])
-            except KeyError:
-                self.lineH1.setMode(self.lineH1.TICK_MODE)
+            lineH1Setting = {}
+            lineH1Setting['name'] = u'H1'
+            lineH1Setting['period'] = 'hour'
+            lineH1Setting['barTimeInterval'] = 1
+            lineH1Setting['inputPreLen'] = 5
+            lineH1Setting['inputMa1Len'] = self.maLength
+            lineH1Setting['mode'] = CtaLineBar.TICK_MODE
+            lineH1Setting['minDiff'] = self.minDiff
+            lineH1Setting['shortSymbol'] = self.shortSymbol
+            self.lineH1 = CtaHourBar(self, self.onBarH1, lineH1Setting)
 
         self.onInit()
 
@@ -109,7 +94,7 @@ class StrategyLBreaker(CtaTemplate):
         if force:
             self.writeCtaLog(u'策略强制初始化')
             self.inited = False
-            self.trading = False                        # 控制是否启动交易
+            self.trading = False
         else:
             self.writeCtaLog(u'策略初始化')
             if self.inited:
@@ -120,24 +105,22 @@ class StrategyLBreaker(CtaTemplate):
         self.entrust = EMPTY_INT             # 初始化委托状态
         self.globalPreHigh = EMPTY_INT  # 初始化前高
         self.globalPreLow = EMPTY_INT  # 初始化前低
+        self.ma_40 = EMPTY_INT  # 初始化ma_40
 
         if not self.backtesting:
-            # 这里需要加载前置数据哦。
             if not self.__initDataFromShcifo():
-                self.inited = True                   # 更新初始化标识
-                self.trading = True                  # 启动交易
+                self.inited = True
+                self.trading = True
 
         self.putEvent()
         self.writeCtaLog(u'策略初始化完成')
 
     def __initDataFromShcifo(self):
-        """从sina初始化5分钟数据"""
         ip = 'dsdx.shcifco.com'
         port = '10083'
         token = '50404935ba9cb370de2ac22474966163'
         api = ShcifcoApi(ip, port, token)
         ret = api.getMinBars(self.symbol, self.lineH1.addBar)
-        # ret = api.getMinBars(self.symbol, self.lineM5.addBar)
         if not ret:
             self.writeCtaLog(u'获取M5数据失败')
             return False
@@ -154,7 +137,7 @@ class StrategyLBreaker(CtaTemplate):
         self.pos = EMPTY_INT
         self.entrust = EMPTY_INT
 
-        self.writeCtaLog(u'停止' )
+        self.writeCtaLog(u'停止')
         self.putEvent()
 
     def onTrade(self, trade):
@@ -163,12 +146,10 @@ class StrategyLBreaker(CtaTemplate):
 
     def onOrder(self, order):
         """报单更新"""
-        self.putEvent()  # 更新监控事件
         pass
 
     def onStopOrder(self, orderRef):
         """停止单更新"""
-        self.writeCtaLog(u'{0},停止单触发，orderRef:{1}'.format(self.curDateTime, orderRef))
         pass
 
     def onTick(self, tick):
@@ -196,18 +177,10 @@ class StrategyLBreaker(CtaTemplate):
         if not (self.inited and len(self.lineH1.lineMa1) > 0):
             return
 
-        # 更新最高价和最低价
-        if tick.lastPrice > self.globalPreHigh:
-            self.globalPreHigh = tick.lastPrice
+        self.globalPreHigh = max(tick.lastPrice, self.globalPreHigh)
+        self.globalPreLow = min(tick.lastPrice, self.globalPreLow)
 
-        if tick.lastPrice < self.globalPreLow:
-            self.globalPreLow = tick.lastPrice
-
-
-    # ----------------------------------------------------------------------
     def onBar(self, bar):
-        """分钟K线数据更新（仅用于回测时，从策略外部调用)"""
-
         # 更新策略执行的时间（用于回测时记录发生的时间）
         # 回测数据传送的bar.datetime，为bar的开始时间，所以，到达策略时，当前时间为bar的结束时间
         self.curDateTime = bar.datetime + timedelta(seconds=self.lineM5.barTimeInterval)
@@ -229,10 +202,8 @@ class StrategyLBreaker(CtaTemplate):
 
     def onBarM5(self, bar):
         """  分钟K线数据更新，实盘时，由self.lineM5的回调"""
-
-        # 未初始化完成
-        # self.writeCtaLog('*' * 20 + 'onBarM5 start' + '*' * 20)
-        # self.writeCtaLog(self.lineM5.displayLastBar())
+        self.writeCtaLog('-' * 20 + 'onBarM5 start' + '-' * 20)
+        self.writeCtaLog(self.lineM5.displayLastBar())
         if not self.inited:
             return
 
@@ -245,22 +216,23 @@ class StrategyLBreaker(CtaTemplate):
         if self.backtesting:
             # 持有多仓/空仓时，更新最高价和最低价
             # 更新最高价和最低价
-            if bar.high > self.globalPreHigh:
-                self.globalPreHigh = bar.high
+            self.globalPreHigh = max(bar.high, self.globalPreHigh)
+            self.globalPreLow = min(bar.low, self.globalPreLow)
 
-            if bar.low < self.globalPreLow:
-                self.globalPreLow = bar.low
+        if len(self.lineH1.lineMa1) > 0:
+            self.ma_40 = self.lineM5.lineMa3[-1]
 
-        # 如果未持仓，检查是否符合开仓逻辑
         if self.tradeWindow and self.position.pos == 0:
-            self.writeCtaLog('*' * 20 + 'tradeWindow start' + '*' * 20)
-            open_point = EMPTY_INT
-            lose_point = EMPTY_INT
-            win_point1 = EMPTY_INT
+            self.writeCtaLog(u'~{0} in tradeWindow'.format(self.symbol))
+            open_point, lose_point, win_point1 = 0.0, 0.0, 0.0
             if bar.close > self.lineH1.lineMa1[-1]:
+                self.writeCtaLog(u'~{0} 向上突破MA40 {1}'.format(self.symbol, self.lineH1.lineMa1[-1]))
                 if bar.close > self.globalPreHigh:
+                    self.writeCtaLog(u'~{0} 向上突破前高 {1}'.format(self.symbol, self.globalPreHigh))
                     if bar.openInterest > self.lineM5[-1].openInterest * 1.003:
+                        self.writeCtaLog(u'~{0} 持仓量比前一根K线持仓量增加千分之三以上 {1}'.format(self.symbol, bar.openInterest))
                         if bar.close < self.globalPreLow * 1.015:
+                            self.writeCtaLog(u'~{0} 收盘价小于前低的 1 + 1.5% {1}'.format(self.symbol, self.globalPreLow * 1.015))
                             if bar.high - bar.low > 20 * self.minDiff:
                                 open_point = bar.close + (bar.high - bar.low)//2 + 2 * self.minDiff
                                 lose_point = bar.close - 2 * self.minDiff
@@ -272,11 +244,16 @@ class StrategyLBreaker(CtaTemplate):
                             ddRobot = dingRobot()
                             message = u'{0}可以开多仓, 当前价{1}, 开仓点{2}， 第一止盈点{3}, 止损点{4}'.\
                                 format(bar.symbol, bar.close, open_point, win_point1, lose_point)
+                            self.writeCtaLog(u'~{0} send message: {1}'.format(self.symbol, message))
                             ddRobot.postStart(message)
             if bar.close < self.lineH1.lineMa1[-1]:
-                if bar.close < self.globalPreHigh:
+                self.writeCtaLog(u'~{0} 向下突破MA40 {1}'.format(self.symbol, self.lineH1.lineMa1[-1]))
+                if bar.close < self.globalPreLow:
+                    self.writeCtaLog(u'~{0} 向下突破前低 {1}'.format(self.symbol, self.globalPreLow))
                     if bar.openInterest < self.lineM5[-1].openInterest * 0.997:
+                        self.writeCtaLog(u'~{0} 持仓量比前一根K线持仓量减少千分之三以上 {1}'.format(self.symbol, bar.openInterest))
                         if bar.close > self.globalPreHigh * 0.985:
+                            self.writeCtaLog(u'~{0} 收盘价大于前高的 1 - 1.5% {1}'.format(self.symbol, self.globalPreHigh * 0.985))
                             if bar.high - bar.low > 20 * self.minDiff:
                                 open_point = bar.close + (bar.high - bar.low)//2 - 2 * self.minDiff
                                 lose_point = bar.close + 2 * self.minDiff
@@ -288,6 +265,7 @@ class StrategyLBreaker(CtaTemplate):
                             ddRobot = dingRobot()
                             message = u'{0}可以开多仓, 当前价{1}, 开仓点{2}， 第一止盈点{3}, 止损点{4}'.\
                                 format(bar.symbol, bar.close, open_point, win_point1, lose_point)
+                            self.writeCtaLog(u'~{0} send message: {1}'.format(self.symbol, message))
                             ddRobot.postStart(message)
 
     def onBarH1(self, bar):
