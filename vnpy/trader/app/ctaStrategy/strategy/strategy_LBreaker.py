@@ -103,8 +103,8 @@ class StrategyLBreaker(CtaTemplate):
 
         self.pos = EMPTY_INT                 # 初始化持仓
         self.entrust = EMPTY_INT             # 初始化委托状态
-        self.globalPreHigh = EMPTY_INT  # 初始化前高
-        self.globalPreLow = EMPTY_INT  # 初始化前低
+        self.globalPreHigh = 0  # 初始化前高
+        self.globalPreLow = 1000000  # 初始化前低
         self.ma_40 = EMPTY_INT  # 初始化ma_40
 
         if not self.backtesting:
@@ -194,11 +194,6 @@ class StrategyLBreaker(CtaTemplate):
 
         # 4、交易逻辑
         # 首先检查是否是实盘运行还是数据预处理阶段
-        if not self.inited:
-            if len(self.lineH1.lineBar) > 40 + 2:
-                self.inited = True
-            else:
-                return
 
     def onBarM5(self, bar):
         """  分钟K线数据更新，实盘时，由self.lineM5的回调"""
@@ -220,7 +215,7 @@ class StrategyLBreaker(CtaTemplate):
             self.globalPreLow = min(bar.low, self.globalPreLow)
 
         if len(self.lineH1.lineMa1) > 0:
-            self.ma_40 = self.lineM5.lineMa3[-1]
+            self.ma_40 = self.lineH1.lineMa1[-1]
 
         if self.tradeWindow and self.position.pos == 0:
             self.writeCtaLog(u'~{0} in tradeWindow'.format(self.symbol))
@@ -229,7 +224,7 @@ class StrategyLBreaker(CtaTemplate):
                 self.writeCtaLog(u'~{0} 向上突破MA40 {1}'.format(self.symbol, self.lineH1.lineMa1[-1]))
                 if bar.close > self.globalPreHigh:
                     self.writeCtaLog(u'~{0} 向上突破前高 {1}'.format(self.symbol, self.globalPreHigh))
-                    if bar.openInterest > self.lineM5[-1].openInterest * 1.003:
+                    if bar.openInterest > self.lineM5.lineBar[-1].openInterest * 1.003:
                         self.writeCtaLog(u'~{0} 持仓量比前一根K线持仓量增加千分之三以上 {1}'.format(self.symbol, bar.openInterest))
                         if bar.close < self.globalPreLow * 1.015:
                             self.writeCtaLog(u'~{0} 收盘价小于前低的 1 + 1.5% {1}'.format(self.symbol, self.globalPreLow * 1.015))
@@ -250,7 +245,7 @@ class StrategyLBreaker(CtaTemplate):
                 self.writeCtaLog(u'~{0} 向下突破MA40 {1}'.format(self.symbol, self.lineH1.lineMa1[-1]))
                 if bar.close < self.globalPreLow:
                     self.writeCtaLog(u'~{0} 向下突破前低 {1}'.format(self.symbol, self.globalPreLow))
-                    if bar.openInterest < self.lineM5[-1].openInterest * 0.997:
+                    if bar.openInterest < self.lineM5.lineBar[-1].openInterest * 0.997:
                         self.writeCtaLog(u'~{0} 持仓量比前一根K线持仓量减少千分之三以上 {1}'.format(self.symbol, bar.openInterest))
                         if bar.close > self.globalPreHigh * 0.985:
                             self.writeCtaLog(u'~{0} 收盘价大于前高的 1 - 1.5% {1}'.format(self.symbol, self.globalPreHigh * 0.985))
@@ -274,6 +269,11 @@ class StrategyLBreaker(CtaTemplate):
         self.writeCtaLog(self.lineH1.displayLastBar())
         # 未初始化完成
         # self.writeCtaLog(u'MA40:{0}'.format(self.lineH1.lineMa1[-1]))
+        if not self.inited:
+            if len(self.lineH1.lineBar) > 40 + 2:
+                self.inited = True
+            else:
+                return
 
 
     def __timeWindow(self, dt):
