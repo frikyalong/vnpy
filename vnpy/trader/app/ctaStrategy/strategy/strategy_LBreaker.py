@@ -218,16 +218,16 @@ class StrategyLBreaker(CtaTemplate):
             self.ma_40 = self.lineH1.lineMa1[-1]
 
         if self.tradeWindow and self.position.pos == 0:
-            self.writeCtaLog(u'~{0} in tradeWindow'.format(self.symbol))
+            self.writeCtaLog(u'### {0} in tradeWindow'.format(self.symbol))
             open_point, lose_point, win_point1 = 0.0, 0.0, 0.0
             if bar.close > self.lineH1.lineMa1[-1]:
-                self.writeCtaLog(u'~{0} 向上突破MA40 {1}'.format(self.symbol, self.lineH1.lineMa1[-1]))
+                self.writeCtaLog(u'### {0} 向上突破MA40 {1}'.format(self.symbol, self.lineH1.lineMa1[-1]))
                 if bar.close > self.globalPreHigh:
-                    self.writeCtaLog(u'~{0} 向上突破前高 {1}'.format(self.symbol, self.globalPreHigh))
+                    self.writeCtaLog(u'### {0} 向上突破前高 {1}'.format(self.symbol, self.globalPreHigh))
                     if bar.openInterest > self.lineM5.lineBar[-1].openInterest * 1.003:
-                        self.writeCtaLog(u'~{0} 持仓量比前一根K线持仓量增加千分之三以上 {1}'.format(self.symbol, bar.openInterest))
+                        self.writeCtaLog(u'### {0} 持仓量比前一根K线持仓量增加千分之三以上 {1}'.format(self.symbol, bar.openInterest))
                         if bar.close < self.globalPreLow * 1.015:
-                            self.writeCtaLog(u'~{0} 收盘价小于前低的 1 + 1.5% {1}'.format(self.symbol, self.globalPreLow * 1.015))
+                            self.writeCtaLog(u'### {0} 收盘价小于前低的 1 + 1.5% {1}'.format(self.symbol, self.globalPreLow * 1.015))
                             if bar.high - bar.low > 20 * self.minDiff:
                                 open_point = bar.close + (bar.high - bar.low)//2 + 2 * self.minDiff
                                 lose_point = bar.close - 2 * self.minDiff
@@ -239,16 +239,16 @@ class StrategyLBreaker(CtaTemplate):
                             ddRobot = dingRobot()
                             message = u'{0}可以开多仓, 当前价{1}, 开仓点{2}， 第一止盈点{3}, 止损点{4}'.\
                                 format(bar.symbol, bar.close, open_point, win_point1, lose_point)
-                            self.writeCtaLog(u'~{0} send message: {1}'.format(self.symbol, message))
+                            self.writeCtaLog(u'### {0} send message: {1}'.format(self.symbol, message))
                             ddRobot.postStart(message)
             if bar.close < self.lineH1.lineMa1[-1]:
-                self.writeCtaLog(u'~{0} 向下突破MA40 {1}'.format(self.symbol, self.lineH1.lineMa1[-1]))
+                self.writeCtaLog(u'### {0} 向下突破MA40 {1}'.format(self.symbol, self.lineH1.lineMa1[-1]))
                 if bar.close < self.globalPreLow:
-                    self.writeCtaLog(u'~{0} 向下突破前低 {1}'.format(self.symbol, self.globalPreLow))
+                    self.writeCtaLog(u'### {0} 向下突破前低 {1}'.format(self.symbol, self.globalPreLow))
                     if bar.openInterest < self.lineM5.lineBar[-1].openInterest * 0.997:
-                        self.writeCtaLog(u'~{0} 持仓量比前一根K线持仓量减少千分之三以上 {1}'.format(self.symbol, bar.openInterest))
+                        self.writeCtaLog(u'### {0} 持仓量比前一根K线持仓量减少千分之三以上 {1}'.format(self.symbol, bar.openInterest))
                         if bar.close > self.globalPreHigh * 0.985:
-                            self.writeCtaLog(u'~{0} 收盘价大于前高的 1 - 1.5% {1}'.format(self.symbol, self.globalPreHigh * 0.985))
+                            self.writeCtaLog(u'### {0} 收盘价大于前高的 1 - 1.5% {1}'.format(self.symbol, self.globalPreHigh * 0.985))
                             if bar.high - bar.low > 20 * self.minDiff:
                                 open_point = bar.close + (bar.high - bar.low)//2 - 2 * self.minDiff
                                 lose_point = bar.close + 2 * self.minDiff
@@ -260,7 +260,7 @@ class StrategyLBreaker(CtaTemplate):
                             ddRobot = dingRobot()
                             message = u'{0}可以开多仓, 当前价{1}, 开仓点{2}， 第一止盈点{3}, 止损点{4}'.\
                                 format(bar.symbol, bar.close, open_point, win_point1, lose_point)
-                            self.writeCtaLog(u'~{0} send message: {1}'.format(self.symbol, message))
+                            self.writeCtaLog(u'### {0} send message: {1}'.format(self.symbol, message))
                             ddRobot.postStart(message)
 
     def onBarH1(self, bar):
