@@ -2,7 +2,7 @@
 
 import sys
 sys.path.append('..')
-from vnpy.trader.vtConstant import EMPTY_STRING, EMPTY_INT
+from vnpy.trader.vtConstant import EMPTY_STRING, EMPTY_INT, DIRECTION_LONG, DIRECTION_SHORT, OFFSET_OPEN,OFFSET_CLOSE,OFFSET_CLOSETODAY,OFFSET_CLOSEYESTERDAY, STATUS_CANCELLED
 from vnpy.trader.app.ctaStrategy.ctaPolicy import  *
 from vnpy.trader.app.ctaStrategy.ctaPosition import *
 from vnpy.trader.app.ctaStrategy.ctaTemplate import *
@@ -19,7 +19,7 @@ class StrategyLBreaker(CtaTemplate):
     inputSS = 1                # 参数SS，下单，范围是1~100，步长为1，默认=1，
     minDiff = 1                # 商品的最小交易单位
     maLength = 40              # 平均波动周期 MA Length
-    maxPos = 4
+    maxPos = 10
 
     def __init__(self, ctaEngine, setting=None):
         super(StrategyLBreaker, self).__init__(ctaEngine, setting)
@@ -34,6 +34,21 @@ class StrategyLBreaker(CtaTemplate):
         self.varList.append('ma40')  # MA40
         self.varList.append('globalPreHigh')  # 前高
         self.varList.append('globalPreLow')  # 前低
+        self.varList.append('ma_40')  # MA40
+
+        # 仓位状态
+        self.position = CtaPosition(self)  # 0 表示没有仓位，1 表示持有多头，-1 表示持有空头
+        self.position.maxPos = self.maxPos
+        self.lastTradedTime = datetime.now()  # 上一交易时间
+
+        self.tradingOpen = True  # 允许开仓
+        self.recheckPositions = True
+
+        self.forceClose = EMPTY_STRING  # 强制平仓的日期（参数，字符串）
+        self.forceCloseDate = None  # 强制平仓的日期（日期类型）
+        self.forceTradingClose = False  # 强制平仓标志
+        self.cancelSeconds = 2  # 未成交撤单的秒数
+        self.firstTrade = True  # 交易日的首个交易
 
         self.curDateTime = None  # 当前Tick时间
         self.curTick = None  # 最新的tick
@@ -54,13 +69,14 @@ class StrategyLBreaker(CtaTemplate):
         self.policy = CtaPolicy()
         self.policy.addPos = True  # 是否激活加仓策略
         self.policy.addPosOnPips = 1  # 加仓策略1，固定点数（动态ATR）
+        self.recheckPositions = True              # 重新提交平仓订单。在每个交易日的下午14点59分时激活，在新的交易日（21点）开始时，重新执行。
 
         self.highPriceInLong = EMPTY_FLOAT  # 成交后，最高价格
         self.lowPriceInShort = EMPTY_FLOAT  # 成交后，最低价格
 
-        # 增加仓位管理模块
-        self.position = CtaPosition(self)
-        self.position.maxPos = self.maxPos
+        self.globalPreHigh = 0  # 初始化前高
+        self.globalPreLow = 1000000  # 初始化前低
+        self.ma_40 = EMPTY_INT  # 初始化ma_40
 
         if setting:
             self.setParam(setting)
@@ -101,25 +117,21 @@ class StrategyLBreaker(CtaTemplate):
                 self.writeCtaLog(u'已经初始化过，不再执行')
                 return
 
+        # 初始化持仓相关数据
+        self.position.pos = EMPTY_INT
         self.pos = EMPTY_INT                 # 初始化持仓
         self.entrust = EMPTY_INT             # 初始化委托状态
-        self.globalPreHigh = 0  # 初始化前高
-        self.globalPreLow = 1000000  # 初始化前低
-        self.ma_40 = EMPTY_INT  # 初始化ma_40
 
         if not self.backtesting:
-            if not self.__initDataFromShcifo():
+            if not self.__init_data_from_shcifo():
                 self.inited = True
                 self.trading = True
 
         self.putEvent()
         self.writeCtaLog(u'策略初始化完成')
 
-    def __initDataFromShcifo(self):
-        ip = 'dsdx.shcifco.com'
-        port = '10083'
-        token = '50404935ba9cb370de2ac22474966163'
-        api = ShcifcoApi(ip, port, token)
+    def __init_data_from_shcifo(self):
+        api = ShcifcoApi('dsdx.shcifco.com', '10083', '50404935ba9cb370de2ac22474966163')
         ret = api.getMinBars(self.symbol, self.lineH1.addBar)
         if not ret:
             self.writeCtaLog(u'获取M5数据失败')
@@ -146,10 +158,36 @@ class StrategyLBreaker(CtaTemplate):
 
     def onOrder(self, order):
         """报单更新"""
-        pass
+        self.writeCtaLog(
+            u'OnOrder()报单更新，orderID:{0},{1},totalVol:{2},tradedVol:{3},offset:{4},price:{5},direction:{6},status:{7}'
+            .format(order.orderID, order.vtSymbol, order.totalVolume, order.tradedVolume,
+                    order.offset, order.price, order.direction, order.status))
+        orderkey = order.gatewayName + u'.' + order.orderID
+        if orderkey in self.uncompletedOrders:
+
+            if order.totalVolume == order.tradedVolume:
+                # 开仓，平仓委托单全部成交
+                self.__onOrderAllTraded(order)
+
+            elif order.tradedVolume > 0 and not order.totalVolume == order.tradedVolume :
+                # 委托单部分成交
+                self.__onOrderPartTraded(order)
+
+            elif order.offset == OFFSET_OPEN and order.status == STATUS_CANCELLED:
+                # 开仓委托单被撤销
+                pass
+
+            else:
+                self.writeCtaLog(u'OnOrder()委托单返回，total:{0},traded:{1}'
+                                 .format(order.totalVolume, order.tradedVolume,))
+
+        self.pos = self.position.pos
+        self.writeCtaLog(u'OnOrder()self.gridpos={0}'.format(self.gridpos))
+        self.putEvent()
 
     def onStopOrder(self, orderRef):
         """停止单更新"""
+        self.writeCtaLog(u'{0},停止单触发，orderRef:{1}'.format(self.curDateTime, orderRef))
         pass
 
     def onTick(self, tick):
@@ -269,6 +307,7 @@ class StrategyLBreaker(CtaTemplate):
         self.writeCtaLog(self.lineH1.displayLastBar())
         # 未初始化完成
         # self.writeCtaLog(u'MA40:{0}'.format(self.lineH1.lineMa1[-1]))
+        self.ma_40 = self.lineH1.lineMa1[-1]
         if not self.inited:
             if len(self.lineH1.lineBar) > 40 + 2:
                 self.inited = True
@@ -318,6 +357,8 @@ class StrategyLBreaker(CtaTemplate):
 
             if dt.minute == 59:  # 日盘平仓
                 self.closeWindow = True
+                self.globalPreHigh = 0  # 初始化前高
+                self.globalPreLow = 1000000  # 初始化前低
                 return
 
         # 夜盘
