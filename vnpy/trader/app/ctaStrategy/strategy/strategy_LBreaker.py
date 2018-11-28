@@ -237,6 +237,7 @@ class StrategyLBreaker(CtaTemplate):
         """  分钟K线数据更新，实盘时，由self.lineM5的回调"""
         self.writeCtaLog('-' * 20 + 'onBarM5 start' + '-' * 20)
         self.writeCtaLog(self.lineM5.displayLastBar())
+        self.writeCtaLog(u'high: {0} low: {1} ma40: {2}'.format(self.globalPreHigh, self.globalPreLow, self.ma_40))
         if not self.inited:
             return
 
@@ -307,7 +308,7 @@ class StrategyLBreaker(CtaTemplate):
         self.writeCtaLog(self.lineH1.displayLastBar())
         # 未初始化完成
         # self.writeCtaLog(u'MA40:{0}'.format(self.lineH1.lineMa1[-1]))
-        self.ma_40 = self.lineH1.lineMa1[-1]
+        # self.ma_40 = self.lineH1.lineMa1[-1]
         if not self.inited:
             if len(self.lineH1.lineBar) > 40 + 2:
                 self.inited = True
