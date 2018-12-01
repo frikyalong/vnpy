@@ -10,7 +10,7 @@ import copy
 from pymongo import MongoClient, ASCENDING
 from pymongo.errors import ConnectionFailure,AutoReconnect
 #import vnpy.trader.mongo_proxy
-
+import vnpy.trader.util_mail as sendmail
 from vnpy.trader.vtEvent import Event as vn_event
 from vnpy.trader.language import text
 #from vnpy.trader.app.ctaStrategy.ctaEngine import CtaEngine
@@ -40,6 +40,9 @@ class MainEngine(object):
 
     #----------------------------------------------------------------------
     def __init__(self, eventEngine):
+        sendmail(
+            subject='Notification进程启动',
+            msgcontent='MainEngine start')
         """Constructor"""
         # 记录今日日期
         self.todayDate = datetime.now().strftime('%Y%m%d')

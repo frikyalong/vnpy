@@ -18,7 +18,12 @@ class StrategyLBreaker(CtaTemplate):
 
     inputSS = 1                # 参数SS，下单，范围是1~100，步长为1，默认=1，
     minDiff = 1                # 商品的最小交易单位
-    maLength = 40              # 平均波动周期 MA Length
+    shortSymbol = ''
+    ma = 40                    # 平均波动周期 MA Length
+
+    globalPreHigh = 0
+    globalPreLow = 1000000
+    maValue = 0
     maxPos = 10
 
     def __init__(self, ctaEngine, setting=None):
@@ -27,14 +32,12 @@ class StrategyLBreaker(CtaTemplate):
         self.paramList.append('inputSS')
         self.paramList.append('minDiff')
         self.paramList.append('shortSymbol')
+        self.paramList.append('ma')  # MA40
 
         # 增加监控变量项目
-        self.varList.append('pos')  # 仓位
-        self.varList.append('entrust')  # 是否正在委托
-        self.varList.append('ma40')  # MA40
         self.varList.append('globalPreHigh')  # 前高
         self.varList.append('globalPreLow')  # 前低
-        self.varList.append('ma_40')  # MA40
+        self.varList.append('maValue')
 
         # 仓位状态
         self.position = CtaPosition(self)  # 0 表示没有仓位，1 表示持有多头，-1 表示持有空头
@@ -76,7 +79,6 @@ class StrategyLBreaker(CtaTemplate):
 
         self.globalPreHigh = 0  # 初始化前高
         self.globalPreLow = 1000000  # 初始化前低
-        self.ma_40 = EMPTY_INT  # 初始化ma_40
 
         if setting:
             self.setParam(setting)
@@ -97,7 +99,7 @@ class StrategyLBreaker(CtaTemplate):
             lineH1Setting['period'] = 'hour'
             lineH1Setting['barTimeInterval'] = 1
             lineH1Setting['inputPreLen'] = 5
-            lineH1Setting['inputMa1Len'] = self.maLength
+            lineH1Setting['inputMa1Len'] = self.ma
             lineH1Setting['mode'] = CtaLineBar.TICK_MODE
             lineH1Setting['minDiff'] = self.minDiff
             lineH1Setting['shortSymbol'] = self.shortSymbol
@@ -124,6 +126,9 @@ class StrategyLBreaker(CtaTemplate):
 
         if not self.backtesting:
             if not self.__init_data_from_shcifo():
+                self.inited = False
+                self.trading = False
+            else:
                 self.inited = True
                 self.trading = True
 
@@ -142,6 +147,7 @@ class StrategyLBreaker(CtaTemplate):
     def onStart(self):
         """启动策略（必须由用户继承实现）"""
         self.writeCtaLog(u'启动')
+        self.putEvent()
 
     def onStop(self):
         """停止策略（必须由用户继承实现）"""
@@ -237,7 +243,7 @@ class StrategyLBreaker(CtaTemplate):
         """  分钟K线数据更新，实盘时，由self.lineM5的回调"""
         self.writeCtaLog('-' * 20 + 'onBarM5 start' + '-' * 20)
         self.writeCtaLog(self.lineM5.displayLastBar())
-        self.writeCtaLog(u'high: {0} low: {1} ma40: {2}'.format(self.globalPreHigh, self.globalPreLow, self.ma_40))
+        self.writeCtaLog(u'high: {0} low: {1} ma40: {2}'.format(self.globalPreHigh, self.globalPreLow, self.maValue))
         if not self.inited:
             return
 
@@ -254,7 +260,7 @@ class StrategyLBreaker(CtaTemplate):
             self.globalPreLow = min(bar.low, self.globalPreLow)
 
         if len(self.lineH1.lineMa1) > 0:
-            self.ma_40 = self.lineH1.lineMa1[-1]
+            self.maValue = self.lineH1.lineMa1[-1]
 
         if self.tradeWindow and self.position.pos == 0:
             self.writeCtaLog(u'### {0} in tradeWindow'.format(self.symbol))
@@ -308,9 +314,9 @@ class StrategyLBreaker(CtaTemplate):
         self.writeCtaLog(self.lineH1.displayLastBar())
         # 未初始化完成
         # self.writeCtaLog(u'MA40:{0}'.format(self.lineH1.lineMa1[-1]))
-        # self.ma_40 = self.lineH1.lineMa1[-1]
+        # self.maValue = self.lineH1.lineMa1[-1]
         if not self.inited:
-            if len(self.lineH1.lineBar) > 40 + 2:
+            if len(self.lineH1.lineBar) > self.ma + 2:
                 self.inited = True
             else:
                 return

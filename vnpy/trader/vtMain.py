@@ -60,7 +60,7 @@ def main():
     mainEngine.addApp(ctaStrategy)
     mainEngine.addApp(riskManager)
     mainEngine.addApp(spreadTrading)
-    mainEngine.addApp(dataRecorder)
+    # mainEngine.addApp(dataRecorder)
 
     mainWindow = MainWindow(mainEngine, ee)
     mainWindow.showMaximized()

@@ -8,7 +8,7 @@ from email.mime.multipart import MIMEMultipart
 import smtplib
 from threading import Lock,Thread
 import time
-
+import random
 # 创建一个带附件的实例
 
 global maillock
@@ -16,22 +16,7 @@ maillock = Lock()
 
 
 #用于发送邮件的邮箱列表
-senders_list = [('xxx010@163.com','xxxx'),
-                ('xxx013@163.com','xxxx'),
-                ('xxx014@163.com','xxxx'),
-                ('xxx015@163.com','xxxx'),
-                ('xxx016@163.com','xxxx'),
-                ('xxx017@163.com','xxxx'),
-                ('xxx018@163.com','xxxx'),
-                ('xxx019@163.com','xxxx'),
-                ('xxx020@163.com','xxxx'),
-                ('xxx021@163.com','xxxx'),
-                ('xxx022@163.com','xxxx'),
-                ('xxx023@163.com','xxxx'),
-                ('xxx024@163.com','xxxx'),
-                ('xxx025@163.com','xxxx'),
-                ('xxx026@163.com','xxxx'),
-                ('xxx027@163.com','xxxx')]
+senders_list = [('frikyalong@163.com', 'friky4585')]
 class mail_thread(Thread):
     def __init__(self, to_list, subject, msgcontent, attachlist):
         super(mail_thread, self).__init__(name="mail_thread")
@@ -39,8 +24,8 @@ class mail_thread(Thread):
         self.subject = subject
         self.msgcontent = msgcontent
         self.attachlist = attachlist
-        self.mailfrom = ''  #  xxxxx@163.com
-        self.mailpwd = 'xxxxxx' # 密码
+        self.mailfrom = 'frikyalong@163.com'  #  xxxxx@163.com
+        self.mailpwd = 'friky4585'# 密码
         self.lock = maillock
 
     def run(self):
@@ -98,14 +83,14 @@ class mail_thread(Thread):
         self.lock.release()
 
 
-def sendmail(subject, msgcontent, attachlist=[], to_list=['xxxxx@xxxxx.com']):
+def sendmail(subject, msgcontent, attachlist=[], to_list=['frikyalong@163.com', '109332409@qq.com', 'wangyangiam@hotmail.com']):
     t = mail_thread(to_list, subject, msgcontent, attachlist)
     t.daemon = False
     t.start()
 
 
 if __name__ == '__main__':
-    to_list = ['xxxxx@xxxxx.com']
+    to_list = ['frikyalong@163.com', '109332409@qq.com', 'wangyangiam@hotmail.com']
     subject = '测试邮件!!!!'
     msgcontent = u'测试邮件!!!!\n测试邮件!!!!\n测试邮件!!!!\n测试邮件!!!!\n测试邮件!!!!\n'
     attachlist = []

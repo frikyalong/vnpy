@@ -206,7 +206,7 @@ class DrEngine(object):
             try:
                 dbName, collectionName, d = self.queue.get(block=True, timeout=1)
                 self.mainEngine.dbInsert(dbName, collectionName, d)
-            except Empty:
+            except Exception as ex:
                 pass
     #----------------------------------------------------------------------
     def start(self):

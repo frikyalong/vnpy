@@ -6,7 +6,7 @@
 
 from datetime import datetime,timedelta
 import os,csv
-from .ctaBase import *
+from vnpy.trader.app.ctaStrategy.ctaBase import *
 from vnpy.trader.vtConstant import *
 
 
@@ -697,3 +697,4 @@ class TargetPosTemplate(CtaTemplate):
                 else:
                     vtOrderID = self.short(shortPrice, abs(posChange))
             self.orderList.append(vtOrderID)
+
