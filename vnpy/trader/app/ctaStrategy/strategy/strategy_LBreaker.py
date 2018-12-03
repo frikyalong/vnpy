@@ -3,7 +3,7 @@
 import sys
 sys.path.append('..')
 from vnpy.trader.vtConstant import EMPTY_STRING, EMPTY_INT, DIRECTION_LONG, DIRECTION_SHORT, OFFSET_OPEN,OFFSET_CLOSE,OFFSET_CLOSETODAY,OFFSET_CLOSEYESTERDAY, STATUS_CANCELLED
-from vnpy.trader.app.ctaStrategy.ctaPolicy import  *
+from vnpy.trader.app.ctaStrategy.ctaPolicy import *
 from vnpy.trader.app.ctaStrategy.ctaPosition import *
 from vnpy.trader.app.ctaStrategy.ctaTemplate import *
 from vnpy.trader.app.ctaStrategy.ctaBase import *
@@ -20,11 +20,6 @@ class StrategyLBreaker(CtaTemplate):
     minDiff = 1                # 商品的最小交易单位
     shortSymbol = ''
     ma = 40                    # 平均波动周期 MA Length
-
-    globalPreHigh = 0
-    globalPreLow = 1000000
-    maValue = 0
-    maxPos = 10
 
     def __init__(self, ctaEngine, setting=None):
         super(StrategyLBreaker, self).__init__(ctaEngine, setting)
@@ -79,6 +74,8 @@ class StrategyLBreaker(CtaTemplate):
 
         self.globalPreHigh = 0  # 初始化前高
         self.globalPreLow = 1000000  # 初始化前低
+        self.maValue = 0
+        self.maxPos = 10
 
         if setting:
             self.setParam(setting)
