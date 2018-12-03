@@ -384,16 +384,18 @@ class MainEngine(object):
         else:
             print(content, file=sys.stderr)
             self.createLogger()
-
-        # 发出邮件/微信
-       #try:
-       #    if len(self.gatewayDetailList) > 0:
-       #        target = self.gatewayDetailList[0]['gatewayName']
-       #    else:
-       #        target = WECHAT_GROUP["DEBUG_01"]
-       #    sendWeChatMsg(content, target=target, level=WECHAT_LEVEL_ERROR)
-       #except Exception as ex:
-       #    print(u'send wechat exception:{}'.format(str(ex)),file=sys.stderr)
+        try:
+            sendmail(subject=u'{0} Warning'.format('_'.join(self.connected_gw_names)), msgcontent=content)
+        except:
+            pass
+        # try:
+        #     if len(self.gatewayDetailList) > 0:
+        #         target = self.gatewayDetailList[0]['gatewayName']
+        #     else:
+        #         target = WECHAT_GROUP["DEBUG_01"]
+        #     sendWeChatMsg(content, target=target, level=WECHAT_LEVEL_ERROR)
+        # except Exception as ex:
+        #     print(u'send wechat exception:{}'.format(str(ex)),file=sys.stderr)
 
     # ----------------------------------------------------------------------
     def writeWarning(self, content):
