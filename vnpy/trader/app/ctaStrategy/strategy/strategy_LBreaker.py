@@ -35,6 +35,7 @@ class StrategyLBreaker(CtaTemplate):
         self.varList.append('maValue')
 
         # 仓位状态
+        self.maxPos = 10
         self.position = CtaPosition(self)  # 0 表示没有仓位，1 表示持有多头，-1 表示持有空头
         self.position.maxPos = self.maxPos
         self.lastTradedTime = datetime.now()  # 上一交易时间
