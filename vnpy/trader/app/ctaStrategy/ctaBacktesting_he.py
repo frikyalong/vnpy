@@ -28,7 +28,8 @@ import decimal
 import numpy as np
 
 from vnpy.trader.app.ctaStrategy.ctaBase import *
-from vnpy.trader.app.ctaStrategy.ctaTickData import *
+# from vnpy.trader.app.ctaStrategy.ctaTickData import *
+from vnpy.trader.app.ctaStrategy.ctaBase import CtaBarData, CtaTickData
 from vnpy.trader.vtConstant import *
 from vnpy.trader.vtGateway import VtOrderData, VtTradeData
 from vnpy.trader.vtFunction import loadMongoSetting
@@ -386,14 +387,15 @@ class BacktestingEngine(object):
         self.strategy.onStart()
         self.output(u'策略启动完成')
 
-        # isOffline = False  # WJ
-        isOffline = True
+        isOffline = False  # WJ
+        # isOffline = True
         host, port, log = loadMongoSetting()
 
         self.dbClient = pymongo.MongoClient(host, port)
         symbol = self.strategy.shortSymbol + self.symbol[-2:]
         self.strategy.vtSymbol = symbol
-        collection = self.dbClient[self.dbName][symbol]
+        # collection = self.dbClient[self.dbName][symbol]
+        collection = self.dbClient[self.dbName]['rb00']
 
         self.output(u'开始载入数据')
 
@@ -2193,8 +2195,13 @@ class BacktestingEngine(object):
                 bar.low = self.roundToPriceTick(float(row['low']))
                 bar.close = self.roundToPriceTick(float(row['close']))
                 bar.volume = float(row['volume']) if len(row['volume'])>0 else 0
-                if '-' in row['index']:
-                    barEndTime = datetime.strptime(row['index'], '%Y-%m-%d %H:%M:%S')
+                bar.openInterest = row['open_interest']
+                # if '-' in row['index']:
+                #     barEndTime = datetime.strptime(row['index'], '%Y-%m-%d %H:%M:%S')
+                # else:
+                #     barEndTime = datetime.strptime(row['datetime'], '%Y%m%d%H%M%S')
+                if '-' in row['datetime']:
+                    barEndTime = datetime.strptime(row['datetime'], '%Y-%m-%d %H:%M:%S')
                 else:
                     barEndTime = datetime.strptime(row['datetime'], '%Y%m%d%H%M%S')
 

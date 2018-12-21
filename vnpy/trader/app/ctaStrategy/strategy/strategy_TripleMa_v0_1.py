@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-# 首先写系统内置模块
+# 首先写系统内置模块f
 import sys
 from datetime import datetime, timedelta, date
 from time import sleep

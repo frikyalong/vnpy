@@ -4,6 +4,7 @@ Release/
 vnpy/api/ctp/build/
 logs/
 temp/
+vnpy/trader/app/ctaStrategy/strategy/cache/
 
 *.so
 *.sdf

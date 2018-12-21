@@ -847,7 +847,8 @@ def testRbByBar():
     engine.barTimeInterval = 300    # bar的周期秒数，用于csv文件自动减时间
 
     # 开始跑回测
-    engine.runBackTestingWithBarFile(os.getcwd() + '/cache/RB88_20100101_20161231_M5.csv')
+    # engine.runBackTestingWithBarFile(os.getcwd() + '/cache/RB88_20100101_20161231_M5.csv')
+    engine.runBackTestingWithBarFile('V:/gary/data/1.csv')
 
     # 显示回测结果
     engine.showBacktestingResult()

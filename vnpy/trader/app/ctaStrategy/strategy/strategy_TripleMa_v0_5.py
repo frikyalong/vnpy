@@ -4,19 +4,19 @@
 import sys
 from datetime import datetime, timedelta, date
 from time import sleep
-
+import numpy
 # 其次，导入vnpy的基础模块
 import sys
 sys.path.append('..')
-from vtConstant import EMPTY_STRING, EMPTY_INT, DIRECTION_LONG, DIRECTION_SHORT, OFFSET_OPEN, STATUS_CANCELLED,EMPTY_FLOAT
+from vnpy.trader.vtConstant import EMPTY_STRING, EMPTY_INT, DIRECTION_LONG, DIRECTION_SHORT, OFFSET_OPEN, STATUS_CANCELLED,EMPTY_FLOAT
 
 # 然后是自己编写的模块
-from ctaTemplate import *
-from ctaBase import *
-from ctaLineBar import *
-from ctaPolicy import *
-from ctaPosition import *
-from utilSinaClient import UtilSinaClient
+from vnpy.trader.app.ctaStrategy.ctaTemplate import *
+from vnpy.trader.app.ctaStrategy.ctaBase import *
+from vnpy.trader.app.ctaStrategy.ctaLineBar import *
+from vnpy.trader.app.ctaStrategy.ctaPolicy import *
+from vnpy.trader.app.ctaStrategy.ctaPosition import *
+from vnpy.trader.util_sina import UtilSinaClient
 
 
 class Strategy_TripleMa(CtaTemplate):
@@ -840,7 +840,9 @@ def testRbByBar():
     engine.barTimeInterval = 300    # bar的周期秒数，用于csv文件自动减时间
 
     # 开始跑回测
-    engine.runBackTestingWithBarFile(os.getcwd() + '/cache/RB88_20100101_20161231_M5.csv')
+    # engine.runBackTestingWithBarFile(os.getcwd() + '/cache/RB88_20100101_20161231_M5.csv')
+
+    engine.runBackTestingWithBarFile('X:/gary/data/1.csv')
 
     # 显示回测结果
     engine.showBacktestingResult()
@@ -850,8 +852,8 @@ def testRbByBar():
 if __name__ == '__main__':
     # 提供直接双击回测的功能
     # 导入PyQt4的包是为了保证matplotlib使用PyQt4而不是PySide，防止初始化出错
-    from ctaBacktesting import *
-    from setup_logger import setup_logger
+    from vnpy.trader.app.ctaStrategy.ctaBacktesting_he import *
+    from vnpy.trader.setup_logger import setup_logger
 
     setup_logger(
         filename=u'TestLogs/{0}_{1}.log'.format(Strategy_TripleMa.className, datetime.now().strftime('%m%d_%H%M')),
