@@ -1982,14 +1982,11 @@ class BacktestingEngine(object):
                 bar.low = self.roundToPriceTick(float(row['low']))
                 bar.close = self.roundToPriceTick(float(row['close']))
                 bar.volume = float(row['volume']) if len(row['volume'])>0 else 0
-                # if '-' in row['index']:
-                #     barEndTime = datetime.strptime(row['index'], '%Y-%m-%d %H:%M:%S')
-                # else:
-                #     barEndTime = datetime.strptime(row['datetime'], '%Y%m%d%H%M%S')
-                if '-' in row['datetime']:
-                    barEndTime = datetime.strptime(row['datetime'], '%Y-%m-%d %H:%M:%S')
+                if '-' in row['index']:
+                    barEndTime = datetime.strptime(row['index'], '%Y-%m-%d %H:%M:%S')
                 else:
                     barEndTime = datetime.strptime(row['datetime'], '%Y%m%d%H%M%S')
+                
                 # 使用Bar的开始时间作为datetime
                 bar.datetime = barEndTime - timedelta(seconds=self.barTimeInterval)
 
