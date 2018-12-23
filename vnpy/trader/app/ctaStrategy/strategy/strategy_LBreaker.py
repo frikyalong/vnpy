@@ -9,8 +9,8 @@ from vnpy.trader.app.ctaStrategy.ctaPosition import *
 from vnpy.trader.app.ctaStrategy.ctaTemplate import *
 from vnpy.trader.app.ctaStrategy.ctaBase import *
 from vnpy.trader.app.ctaStrategy.ctaLineBar import *
-from vnpy.trader.app.ctaStrategy.strategy.dingTalkSend import dingRobot
 from vnpy.data.shcifco.vnshcifco import *
+from vnpy.trader.utils import *
 
 
 class StrategyLBreaker(CtaTemplate):
@@ -18,7 +18,6 @@ class StrategyLBreaker(CtaTemplate):
     author = u'Gary'
     inputSS = 1                # 参数SS，下单，范围是1~100，步长为1，默认=1，
     ma = 40                    # 平均波动周期 MA Length
-    ddRobot = dingRobot()
 
     def __init__(self, ctaEngine, setting=None):
         super(StrategyLBreaker, self).__init__(ctaEngine, setting)
@@ -91,6 +90,7 @@ class StrategyLBreaker(CtaTemplate):
         self.short_open = EMPTY_FLOAT
         self.short_win = EMPTY_FLOAT
         self.short_lose = EMPTY_FLOAT
+        self.message_title = "乐天天"
 
         if setting:
             self.setParam(setting)
@@ -242,8 +242,9 @@ class StrategyLBreaker(CtaTemplate):
 
         # 更新策略执行的时间（用于回测时记录发生的时间）
         self.curDateTime = tick.datetime
-        # self.globalPreHigh = max(tick.lastPrice, self.globalPreHigh)
-        # self.globalPreLow = min(tick.lastPrice, self.globalPreLow)
+        if (tick.datetime.hour == 21 and tick.datetime.minute == 0 and tick.datetime.second == 1):
+            self.globalPreHigh = max(tick.lastPrice, 0)
+            self.globalPreLow = min(tick.lastPrice, 1000000)
 
         # 2、计算交易时间和平仓时间
         self.__timeWindow(self.curDateTime)
@@ -285,8 +286,6 @@ class StrategyLBreaker(CtaTemplate):
         if not self.inited:
             return
         self.tradingDay = bar.tradingDay
-        if self.globalPreHigh == 0:
-            self.__load_data()
         # 执行撤单逻辑
         self.__cancelLogic(dt=self.curDateTime)
 
@@ -321,10 +320,8 @@ class StrategyLBreaker(CtaTemplate):
                                     format(bar.symbol, bar.close, self.long_open, self.long_win, self.long_lose)
                                 self.writeCtaLog(u'### {0} send message: {1}'.format(self.symbol, message))
                                 if not self.backtesting:
-                                    ddRobot.postStart(message)
+                                    send_wx_msg(self.message_title, message)
                                 self.writeCtaLog(u'{0},开仓多单{1}手,价格:{2}'.format(bar.datetime, self.inputSS, self.long_open))
-                                if self.isMonitorMode:
-                                    return
                                 orderid = self.buy(price=bar.close, volume=self.inputSS, orderTime=self.curDateTime)
                                 if orderid:
                                     self.lastOrderTime = self.curDateTime
@@ -348,10 +345,8 @@ class StrategyLBreaker(CtaTemplate):
                                     format(bar.symbol, bar.close, self.short_open, self.short_win, self.short_lose)
                                 self.writeCtaLog(u'### {0} send message: {1}'.format(self.symbol, message))
                                 if not self.backtesting:
-                                    ddRobot.postStart(message)
+                                    send_wx_msg(self.message_title, message)
                                 self.writeCtaLog(u'{0},开仓空单{1}手,价格:{2}'.format(bar.datetime, self.inputSS, self.short_open))
-                                if self.isMonitorMode:
-                                    return
                                 orderid = self.short(price=bar.close, volume=self.inputSS, orderTime=self.curDateTime)
                                 if orderid:
                                     self.lastOrderTime = self.curDateTime
@@ -361,7 +356,7 @@ class StrategyLBreaker(CtaTemplate):
                     if not self.backtesting:
                         message = u'{0}平仓多单止盈, 当前价{1}'. format(bar.symbol, bar.close)
                         self.writeCtaLog(u'### {0} send message: {1}'.format(self.symbol, message))
-                        ddRobot.postStart(message)
+                        send_wx_msg(self.message_title, message)
                     self.writeCtaLog(u'{0},平仓多单止盈{1}手,价格:{2}'.format(bar.datetime, self.inputSS, bar.close))
                     orderid = self.sell(price=bar.close, volume=self.inputSS, orderTime=self.curDateTime)
                     if orderid:
@@ -371,7 +366,7 @@ class StrategyLBreaker(CtaTemplate):
                     if not self.backtesting:
                         message = u'{0}平仓多单止损, 当前价{1}'. format(bar.symbol, bar.close)
                         self.writeCtaLog(u'### {0} send message: {1}'.format(self.symbol, message))
-                        ddRobot.postStart(message)
+                        send_wx_msg(self.message_title, message)
                     self.writeCtaLog(u'{0},平仓多单止损{1}手,价格:{2}'.format(bar.datetime, self.inputSS, bar.close))
                     orderid = self.sell(price=bar.close, volume=self.inputSS, orderTime=self.curDateTime)
                     if orderid:
@@ -381,7 +376,7 @@ class StrategyLBreaker(CtaTemplate):
                     if not self.backtesting:
                         message = u'{0}平仓多单止盈, 当前价{1}'.format(bar.symbol, bar.close)
                         self.writeCtaLog(u'### {0} send message: {1}'.format(self.symbol, message))
-                        ddRobot.postStart(message)
+                        send_wx_msg(self.message_title, message)
                     self.writeCtaLog(u'{0},平仓空单止损{1}手,价格:{2}'.format(bar.datetime, self.inputSS, bar.close))
                     orderid = self.cover(price=bar.close, volume=self.inputSS, orderTime=self.curDateTime)
                     if orderid:
@@ -391,7 +386,7 @@ class StrategyLBreaker(CtaTemplate):
                     if not self.backtesting:
                         message = u'{0}平仓多单止损, 当前价{1}'.format(bar.symbol, bar.close)
                         self.writeCtaLog(u'### {0} send message: {1}'.format(self.symbol, message))
-                        ddRobot.postStart(message)
+                        send_wx_msg(self.message_title, message)
                     self.writeCtaLog(u'{0},平仓空单止损{1}手,价格:{2}'.format(bar.datetime, self.inputSS, bar.close))
                     orderid = self.cover(price=bar.close, volume=self.inputSS, orderTime=self.curDateTime)
                     if orderid:
@@ -401,7 +396,6 @@ class StrategyLBreaker(CtaTemplate):
         # 更新最高价和最低价
         self.globalPreHigh = max(bar.high, self.globalPreHigh)
         self.globalPreLow = min(bar.low, self.globalPreLow)
-        self.__save_data()
 
 
     def onBarH1(self, bar):
@@ -638,7 +632,7 @@ def testRbByTick():
     engine.setStartDate('20170101')
 
     # 设置回测用的数据结束日期
-    engine.setEndDate('20170130')
+    engine.setEndDate('20170315')
 
     # engine.connectMysql()
     engine.setDatabase(dbName='VnTrader_Tick_Db', symbol='rb')
