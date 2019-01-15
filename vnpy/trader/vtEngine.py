@@ -296,6 +296,7 @@ class MainEngine(object):
         """退出程序前调用，保证正常退出"""        
         # 安全关闭所有接口
         for gateway in list(self.gatewayDict.values()):
+            self.writeLog(u'vtEngine退出,关闭接口')
             gateway.close()
         
         # 停止事件引擎
@@ -326,6 +327,7 @@ class MainEngine(object):
 
             # 断开所有的gateway
             for gateway in list(self.gatewayDict.values()):
+                self.writeLog(u'vtEngine.disconnect()，断开所有的gateway')
                 gateway.close()
 
             return True
@@ -379,10 +381,7 @@ class MainEngine(object):
         # 写入本地log日志
         if self.logger is not None:
             self.logger.error(content)
-            print('{}'.format(datetime.now()),file=sys.stderr)
-            print(content, file=sys.stderr)
         else:
-            print(content, file=sys.stderr)
             self.createLogger()
         try:
             sendmail(subject=u'{0} Warning'.format('_'.join(self.connected_gw_names)), msgcontent=content)
@@ -405,6 +404,9 @@ class MainEngine(object):
         event = vn_event(type_=EVENT_WARNING)
         event.dict_['data'] = log
         self.eventEngine.put(event)
+
+        print('{}'.format(datetime.now()), file=sys.stderr)
+        print(content, file=sys.stderr)
 
         # 写入本地log日志
         if self.logger is not None:
@@ -464,13 +466,13 @@ class MainEngine(object):
         event.dict_['data'] = log
         self.eventEngine.put(event)
 
+        print('{}'.format(datetime.now()), file=sys.stderr)
+        print(content, file=sys.stderr)
+
         # 写入本地log日志
         if self.logger:
             self.logger.critical(content)
-            print('{}'.format(datetime.now()), file=sys.stderr)
-            print(content, file=sys.stderr)
         else:
-            print(content, file=sys.stderr)
             self.createLogger()
 
         # 发出邮件
@@ -698,9 +700,6 @@ class MainEngine(object):
             if self.db_has_connected:
                 self.writeLog(u'重新尝试连接数据库')
                 self.dbConnect()
-        except AutoReconnect as ex:
-            self.writeError(u'数据库连接断开重连:{}'.format(str(ex)))
-            time.sleep(1)
         except Exception as ex:
             self.writeError(u'dbDelete exception:{}'.format(str(ex)))
 
@@ -778,16 +777,18 @@ class MainEngine(object):
     def startStrategy(self,name):
         if not self.ctaEngine:
             self.writeError(u'Cta Engine not started')
-            return
+            return False
         self.ctaEngine.startStrategy(name=name)
         self.qryStatus()
+        return True
 
     def stopStrategy(self,name):
         if not self.ctaEngine:
             self.writeError(u'Cta Engine not started')
-            return
+            return False
         self.ctaEngine.stopStrategy(name=name)
         self.qryStatus()
+        return True
 
 ########################################################################
 class DataEngine(object):
@@ -823,6 +824,13 @@ class DataEngine(object):
     def updateContract(self, event):
         """更新合约数据"""
         contract = event.dict_['data']
+        if contract.vtSymbol.endswith('99'):
+            old_contract = self.contractDict.get(contract.vtSymbol,None)
+            if old_contract is not None:
+                contract.size = max(contract.size, old_contract.size)
+                contract.longMarginRatio = max(contract.longMarginRatio,old_contract.longMarginRatio)
+                contract.shortMarginRatio = max(contract.shortMarginRatio, old_contract.shortMarginRatio)
+
         self.contractDict[contract.vtSymbol] = contract
         self.contractDict[contract.symbol] = contract       # 使用常规代码（不包括交易所）可能导致重复
         
