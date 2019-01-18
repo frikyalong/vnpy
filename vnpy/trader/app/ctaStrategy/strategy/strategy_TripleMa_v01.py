@@ -144,68 +144,68 @@ class Strategy_TripleMa_v01(CtaTemplate):
         self.putEvent()
         self.writeCtaLog(u'策略初始化完成')
 
-    def __initDataFromRq(self):
-        """从ricequant初始化5分钟数据"""
-        try:
-            import rqdatac as rq
-            rq.init()
-
-            # 开始时间(120周期得5分钟）
-            start_date = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
-            # 结束时间，若有夜盘，一般是明天或下周一
-            end_date = (datetime.now() + timedelta(days=3)).strftime('%Y-%m-%d')
-
-
-            fields = ['open', 'close', 'high', 'low', 'volume', 'open_interest', 'limit_up', 'limit_down','trading_date']
-
-            self.writeCtaLog(u'ds.get_price(order_book_id={}, start_date={}, end_date={}, frequency=1m, fields={}'
-                             .format(self.getFullSymbol(self.symbol).upper(), start_date, end_date,  fields))
-
-            # ricequant返回得bar，datetime属性是bar的结束时间，所以不能使用callback函数自动推送Bar
-            df = rq.get_price(order_book_ids=self.getFullSymbol(self.symbol).upper(), start_date=start_date,
-                              end_date=end_date, frequency='1m', fields=fields)
-
-            self.writeCtaLog(u'一共获取{}条1分钟数据'.format(len(df)))
-            for idx in df.index:
-                row = df.loc[idx]
-                bar = CtaBarData()
-                bar.vtSymbol = self.symbol
-                bar.symbol = self.symbol
-                last_bar_dt = datetime.strptime(str(idx), '%Y-%m-%d %H:%M:00')
-                self.curDateTime = last_bar_dt
-                bar.datetime = last_bar_dt - timedelta(minutes=1)
-                bar.date = bar.datetime.strftime('%Y-%m-%d')
-                bar.time = bar.datetime.strftime('%H:%M:00')
-
-                if bar.datetime.hour >= 21:
-                    if bar.datetime.isoweekday() == 5:
-                        # 星期五=》星期一
-                        bar.tradingDay = (bar.datetime + timedelta(days=3)).strftime('%Y-%m-%d')
-                    else:
-                        # 第二天
-                        bar.tradingDay = (bar.datetime + timedelta(days=1)).strftime('%Y-%m-%d')
-                elif bar.datetime.hour < 8 and bar.datetime.isoweekday() == 6:
-                    # 星期六=>星期一
-                    bar.tradingDay = (bar.datetime + timedelta(days=2)).strftime('%Y-%m-%d')
-                else:
-                    bar.tradingDay = bar.date
-
-                # 推送Bar到策略中
-                bar.open = float(row['open'])
-                bar.high = float(row['high'])
-                bar.low = float(row['low'])
-                bar.close = float(row['close'])
-                bar.volume = int(row['volume'])
-
-                # self.writeCtaLog(u'{} o:{};h:{};l:{};c:{},v:{},tradingDay:{}'
-                #                 .format(bar.date+' '+bar.time, bar.open, bar.high,
-                #                         bar.low, bar.close, bar.volume, bar.tradingDay))
-                self.lineM5.addBar(bar,bar_freq=1)
-            return True
-
-        except Exception as ex:
-            self.writeCtaError(u'__initDataFromRq Exception:{},{}'.format(str(ex),traceback.format_exc()))
-            return False
+    # def __initDataFromRq(self):
+    #     """从ricequant初始化5分钟数据"""
+    #     try:
+    #         import rqdatac as rq
+    #         rq.init()
+    #
+    #         # 开始时间(120周期得5分钟）
+    #         start_date = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+    #         # 结束时间，若有夜盘，一般是明天或下周一
+    #         end_date = (datetime.now() + timedelta(days=3)).strftime('%Y-%m-%d')
+    #
+    #
+    #         fields = ['open', 'close', 'high', 'low', 'volume', 'open_interest', 'limit_up', 'limit_down','trading_date']
+    #
+    #         self.writeCtaLog(u'ds.get_price(order_book_id={}, start_date={}, end_date={}, frequency=1m, fields={}'
+    #                          .format(self.getFullSymbol(self.symbol).upper(), start_date, end_date,  fields))
+    #
+    #         # ricequant返回得bar，datetime属性是bar的结束时间，所以不能使用callback函数自动推送Bar
+    #         df = rq.get_price(order_book_ids=self.getFullSymbol(self.symbol).upper(), start_date=start_date,
+    #                           end_date=end_date, frequency='1m', fields=fields)
+    #
+    #         self.writeCtaLog(u'一共获取{}条1分钟数据'.format(len(df)))
+    #         for idx in df.index:
+    #             row = df.loc[idx]
+    #             bar = CtaBarData()
+    #             bar.vtSymbol = self.symbol
+    #             bar.symbol = self.symbol
+    #             last_bar_dt = datetime.strptime(str(idx), '%Y-%m-%d %H:%M:00')
+    #             self.curDateTime = last_bar_dt
+    #             bar.datetime = last_bar_dt - timedelta(minutes=1)
+    #             bar.date = bar.datetime.strftime('%Y-%m-%d')
+    #             bar.time = bar.datetime.strftime('%H:%M:00')
+    #
+    #             if bar.datetime.hour >= 21:
+    #                 if bar.datetime.isoweekday() == 5:
+    #                     # 星期五=》星期一
+    #                     bar.tradingDay = (bar.datetime + timedelta(days=3)).strftime('%Y-%m-%d')
+    #                 else:
+    #                     # 第二天
+    #                     bar.tradingDay = (bar.datetime + timedelta(days=1)).strftime('%Y-%m-%d')
+    #             elif bar.datetime.hour < 8 and bar.datetime.isoweekday() == 6:
+    #                 # 星期六=>星期一
+    #                 bar.tradingDay = (bar.datetime + timedelta(days=2)).strftime('%Y-%m-%d')
+    #             else:
+    #                 bar.tradingDay = bar.date
+    #
+    #             # 推送Bar到策略中
+    #             bar.open = float(row['open'])
+    #             bar.high = float(row['high'])
+    #             bar.low = float(row['low'])
+    #             bar.close = float(row['close'])
+    #             bar.volume = int(row['volume'])
+    #
+    #             # self.writeCtaLog(u'{} o:{};h:{};l:{};c:{},v:{},tradingDay:{}'
+    #             #                 .format(bar.date+' '+bar.time, bar.open, bar.high,
+    #             #                         bar.low, bar.close, bar.volume, bar.tradingDay))
+    #             self.lineM5.addBar(bar,bar_freq=1)
+    #         return True
+    #
+    #     except Exception as ex:
+    #         self.writeCtaError(u'__initDataFromRq Exception:{},{}'.format(str(ex),traceback.format_exc()))
+    #         return False
 
     def __initDataFromTdx(self):
         """从通达信初始化五分钟数据"""

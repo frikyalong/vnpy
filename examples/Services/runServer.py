@@ -45,7 +45,7 @@ class VtServer(RpcServer):
         # gateway 的连接名称，在vtEngine.initGateway()里面定义，对应的配置文件是 "连接名称_connect.json"，
         self.gateway_name = AUTO_CONNCET_GW
         # 启动的策略实例，须在catStrategy/CtaSetting.json 里面定义  [u'S28_RB1001', u'S28_TFT', u'S28_HCRB',u'atr_rsi']
-        self.strategies = [u'G01_LBreaker_RB', 'G01_LBreaker_RU', 'G01_LBreaker_M', 'G01_LBreaker_I', 'G01_LBreaker_CU', 'G01_LBreaker_NI', 'G01_LBreaker_HC', 'G01_LBreaker_Y', 'G01_LBreaker_JM', 'G01_LBreaker_CF', 'G01_LBreaker_ZN', 'G01_LBreaker_SR', 'G01_LBreaker_J', 'G01_LBreaker_TA', 'G01_LBreaker_MA', 'G01_LBreaker_BU', 'G01_LBreaker_P', 'G01_LBreaker_RM', 'G01_LBreaker_PP', 'G01_LBreaker_C']
+        self.strategies = [u'Strategy_TripleMa_01_RB_Min5']
         self.g_count = 0
         self.disconnect_signal = 0
         self.last_dt = datetime.now()
