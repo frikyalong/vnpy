@@ -121,18 +121,18 @@ class Strategy_TripleMa_v01(CtaTemplate):
         self.entrust = EMPTY_INT             # 初始化委托状态
         if not self.backtesting:
             # 这里需要加载前置数据哦。
-            #if self.__initDataFromSina():
-            #    self.inited = True                   # 更新初始化标识
-            #else:
-            #    self.writeCtaError(u'从Sina初始数据失败')
-            #    return
+            if self.__initDataFromSina():
+               self.inited = True                   # 更新初始化标识
+            else:
+               self.writeCtaError(u'从Sina初始数据失败')
+               return
 
             # 这里是使用Ricequant的历史数据
-            if self.__initDataFromRq():
-                self.inited = True
-            else:
-                self.writeCtaError(u'从Ricequant初始数据失败')
-                return
+            # if self.__initDataFromRq():
+            #     self.inited = True
+            # else:
+            #     self.writeCtaError(u'从Ricequant初始数据失败')
+            #     return
 
             # 这里是使用通达信的历史数据
             #if self.__initDataFromTdx():
